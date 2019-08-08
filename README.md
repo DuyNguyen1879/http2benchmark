@@ -6,21 +6,33 @@
   - You need to have root ssh access for both servers
   - There should be no firewall blocking ports 22, 80, 443, or 5001
 
+# Firewalld whitelisted ports
+
+```
+firewall-cmd --permanent --zone=public --add-port=22/tcp
+firewall-cmd --permanent --zone=public --add-port=80/tcp
+firewall-cmd --permanent --zone=public --add-port=443/tcp
+firewall-cmd --permanent --zone=public --add-port=5001/tcp
+firewall-cmd --reload
+firewall-cmd --zone=public --list-ports
+firewall-cmd --zone=public --list-services
+```
+
 # How to benchmark
 ## Server install
 ``` bash
-git clone https://github.com/http2benchmark/http2benchmark.git
+git clone -b extended-tests https://github.com/centminmod/http2benchmark.git
 ```
 ``` bash
-http2benchmark/setup/server/server.sh
+http2benchmark/setup/server/server.sh | tee server.log
 ```
 
 ## Client install
 ``` bash
-git clone https://github.com/http2benchmark/http2benchmark.git
+git clone -b extended-tests https://github.com/centminmod/http2benchmark.git
 ```
 ``` bash
-http2benchmark/setup/client/client.sh
+http2benchmark/setup/client/client.sh | tee client.log
 ```
 
 You will be required to input [Test Server IP], [copy the public key to the Test server], and then [click any key] to finish the installation, like so:
@@ -40,7 +52,7 @@ Once complete, click ANY key to continue:
 ## How to test
 Run the following command in client server:
 ``` bash
-/opt/benchmark.sh
+/opt/benchmark.sh | tee benchmark.log
 ```
 
 ## Log 

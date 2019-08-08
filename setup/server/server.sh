@@ -193,7 +193,7 @@ ubuntu_install_pkg(){
         silent apt-get install lsb-release -y
         silent apt-get install curl wget -y
     fi
-    silent apt-get install curl net-tools software-properties-common -y
+    silent apt-get install curl net-tools software-properties-common subversion -y
 ### Install postfix
     if [ -e /usr/sbin/postfix ]; then 
         echoG 'Postfix already installed'
@@ -272,6 +272,9 @@ centos_install_pkg(){
     fi
     if [ ! -e /usr/bin/curl ]; then 
         silent yum install curl -y
+    fi
+    if [ ! -e /usr/bin/svn ]; then 
+        silent yum install subversion -y
     fi
 
 ### Install postfix
@@ -671,19 +674,45 @@ EOC
 ### Install 1kb static file
     echoG 'Install Target: /1kstatic.html'
     cp ../../tools/target/1kstatic.html ${DOCROOT}
+### Install 1kb static file precompressed
+    echoG 'Install Target: /1kgzip-static.html'
+    cp ../../tools/target/1kstatic.html ${DOCROOT}/1kgzip-static.html
+    if [ ! -f ${DOCROOT}/1kgzip-static.html.gz ]; then
+        gzip -9 -c ${DOCROOT}/1kgzip-static.html > ${DOCROOT}/1kgzip-static.html.gz
+    fi
 ### Install 10kb static file
     echoG 'Install Target: /10kstatic.html'
     cp ../../tools/target/10kstatic.html ${DOCROOT}
+### Install 10kb static file precompressed
+    echoG 'Install Target: /10kgzip-static.html'
+    cp ../../tools/target/10kstatic.html ${DOCROOT}/10kgzip-static.html
+    if [ ! -f ${DOCROOT}/10kgzip-static.html.gz ]; then
+        gzip -9 -c ${DOCROOT}/10kgzip-static.html > ${DOCROOT}/10kgzip-static.html.gz
+    fi
 ### Install 100kb static file
     echoG 'Install Target: /100kstatic.html'
     if [ ! -e ${DOCROOT}/100kstatic.html ]; then
         silent dd if=/dev/zero of=${DOCROOT}/100kstatic.html bs=1K count=100
+    fi
+### Install 100kb static file precompressed
+    echoG 'Install Target: /100kgzip-static.html'
+    if [ ! -e ${DOCROOT}/100kgzip-static.html ]; then
+        silent dd if=/dev/zero of=${DOCROOT}/100kgzip-static.html bs=1K count=100
+    fi
+    if [ ! -f ${DOCROOT}/100kgzip-static.html.gz ]; then
+        gzip -9 -c ${DOCROOT}/100kgzip-static.html > ${DOCROOT}/100kgzip-static.html.gz
     fi
 ### Install 1kb non gzip static file
     echoG 'Install Target: /1knogzip.jpg'
     if [ ! -e ${DOCROOT}/1kstatic.jpg ]; then
         silent dd if=/dev/zero of=${DOCROOT}/1knogzip.jpg bs=1K count=1 
     fi 
+### Install 26kb jpg image
+    echoG 'Install Target: /amdepyc2.jpg'
+    cp ../../sitefiles/amdepyc2.jpg ${DOCROOT}
+### Install 187kb png image
+    echoG 'Install Target: /amdepyc2.png'
+    cp ../../sitefiles/amdepyc2.png ${DOCROOT}
 ### Install phpinfo page
     if [ ! -e ${DOCROOT}/phpinfo.php ]; then
         cat > ${DOCROOT}/phpinfo.php << EOC
@@ -691,6 +720,11 @@ EOC
     echo phpinfo();
 ?>
 EOC
+    fi
+### Install static html OceanWP Coach Wordpress theme blog site
+### https://github.com/centminmod/testpages
+    if [ ! -d ${DOCROOT}/coach-blog ]; then
+        svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coach-blog
     fi
 }
 
@@ -741,6 +775,7 @@ cpuprocess(){
         
     fi
 }
+
 
 change_owner(){
     chown -R ${USER}:${GROUP} ${1}

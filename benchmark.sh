@@ -8,7 +8,7 @@ SERVER_LIST="lsws nginx"
 #SERVER_LIST="apache lsws nginx ols"
 TOOL_LIST="h2load wrk"
 #TOOL_LIST="h2load jmeter"
-TARGET_LIST="1kstatic.html 10kstatic.html 1kgzip-static.html 10kgzip-static.html 1knogzip.jpg amdepyc2.jpg amdepyc2.png wordpress coach-blog"
+TARGET_LIST="1kstatic.html 10kstatic.html 1kgzip-static.html 10kgzip-static.html 1knogzip.jpg amdepyc2.jpg amdepyc2.png wordpress coach-blog coach-blog-gzip"
 #TARGET_LIST="1kstatic.html 1knogzip.jpg 10kstatic.html 100kstatic.html wordpress"
 
 CPU_THRESHOLD=30

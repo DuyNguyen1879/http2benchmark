@@ -724,14 +724,16 @@ EOC
 ### Install static html OceanWP Coach Wordpress theme blog site
 ### https://github.com/centminmod/testpages
     if [ ! -d ${DOCROOT}/coach-blog ]; then
-        svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coach-blog ${DOCROOT}/coach-blog
+        echoG 'Install Target: /coach-blog'
+        silent svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coach-blog ${DOCROOT}/coach-blog
     fi
 ### Install precompressed static html OceanWP Coach Wordpress theme blog site
 ### https://github.com/centminmod/testpages
     if [ ! -d ${DOCROOT}/coach-blog-gzip ]; then
-        svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coach-blog ${DOCROOT}/coach-blog-gzip
+        echoG 'Install Target: /coach-blog-gzip'
+        silent svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coach-blog ${DOCROOT}/coach-blog-gzip
         find ${DOCROOT}/coach-blog-gzip -type f \( -name "*.html" -o -name "*.css" -o -name "*.js" \) -exec sh -c "gzip -9 -c {} > {}.gz" \;
-        find ${DOCROOT}/coach-blog-gzip -type f \( -name "*.html.gz" -o -name "*.css.gz" -o -name "*.js.gz" \)
+        # find ${DOCROOT}/coach-blog-gzip -type f \( -name "*.html.gz" -o -name "*.css.gz" -o -name "*.js.gz" \)
     fi
 }
 

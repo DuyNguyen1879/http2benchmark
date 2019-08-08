@@ -342,6 +342,12 @@ main_test(){
                 if [ "${TARGET}" = 'wordpress' ]; then
                     TARGET=${WEB_ARR["${SERVER}"]}
                 fi
+                if [ "${TARGET}" = 'coach-blog' ]; then
+                    TARGET='coach-blog/'
+                fi
+                if [ "${TARGET}" = 'coach-blog-gzip' ]; then
+                    TARGET='coach-blog/'
+                fi
                 echoY "      |--- https://${TARGET_DOMAIN}/${TARGET}"
                 if [ ${CHECK} = 'ON' ]; then
                     sleep ${INTERVAL}
@@ -401,6 +407,10 @@ sort_log(){
             for SERVER in ${SERVER_LIST}; do
                 if [ "${TARGET}" = 'wordpress' ]; then
                     SORT_TARGET=${WEB_ARR["${SERVER}"]}
+                elif [ "${TARGET}" = 'coach-blog' ]; then
+                    SORT_TARGET='coach-blog/'
+                elif [ "${TARGET}" = 'coach-blog-gzip' ]; then
+                    SORT_TARGET='coach-blog-gzip/'
                 else
                     SORT_TARGET=${TARGET}
                 fi
@@ -485,6 +495,10 @@ parse_log() {
             for TARGET in ${TARGET_LIST}; do
                 if [ "${TARGET}" = 'wordpress' ]; then
                     TARGET=${WEB_ARR["${SERVER}"]}
+                elif [ "${TARGET}" = 'coach-blog' ]; then
+                    TARGET='coach-blog/'
+                elif [ "${TARGET}" = 'coach-blog-gzip' ]; then
+                    TARGET='coach-blog-gzip/'
                 fi
                 noext_target ${TARGET}
                 case ${TOOL} in

@@ -1,6 +1,8 @@
 # HTTP2Benchmark
 [<img src="https://img.shields.io/badge/Made%20with-BASH-orange.svg">](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) 
 
+`extended-tests` branch can be searched via [Sourcegraph](https://sourcegraph.com/github.com/centminmod/http2benchmark@extended-tests)
+
 # Test Targets
 
 The following test targets are benchmarked by default

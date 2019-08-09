@@ -723,17 +723,23 @@ EOC
     fi
 ### Install static html OceanWP Coach Wordpress theme blog site
 ### https://github.com/centminmod/testpages
-    if [ ! -d ${DOCROOT}/coach-blog ]; then
-        echoG 'Install Target: /coach-blog'
-        silent svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coach-blog ${DOCROOT}/coach-blog
+    if [ ! -d ${DOCROOT}/coachblog ]; then
+        echoG 'Install Target: /coachblog'
+        silent svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coachblog ${DOCROOT}/coachblog
+        cp -a ${DOCROOT}/coachblog ${DOCROOT}/coachblog_apache
+        cp -a ${DOCROOT}/coachblog ${DOCROOT}/coachblog_lsws
+        cp -a ${DOCROOT}/coachblog ${DOCROOT}/coachblog_nginx
     fi
 ### Install precompressed static html OceanWP Coach Wordpress theme blog site
 ### https://github.com/centminmod/testpages
-    if [ ! -d ${DOCROOT}/coach-blog-gzip ]; then
-        echoG 'Install Target: /coach-blog-gzip'
-        silent svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coach-blog ${DOCROOT}/coach-blog-gzip
-        find ${DOCROOT}/coach-blog-gzip -type f \( -name "*.html" -o -name "*.css" -o -name "*.js" \) -exec sh -c "gzip -9 -c {} > {}.gz" \;
-        # find ${DOCROOT}/coach-blog-gzip -type f \( -name "*.html.gz" -o -name "*.css.gz" -o -name "*.js.gz" \)
+    if [ ! -d ${DOCROOT}/coachbloggzip ]; then
+        echoG 'Install Target: /coachbloggzip'
+        silent svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coachblog ${DOCROOT}/coachbloggzip
+        find ${DOCROOT}/coachbloggzip -type f \( -name "*.html" -o -name "*.css" -o -name "*.js" \) -exec sh -c "gzip -9 -c {} > {}.gz" \;
+        # find ${DOCROOT}/coachbloggzip -type f \( -name "*.html.gz" -o -name "*.css.gz" -o -name "*.js.gz" \)
+        cp -a ${DOCROOT}/coachbloggzip ${DOCROOT}/coachbloggzip_apache
+        cp -a ${DOCROOT}/coachbloggzip ${DOCROOT}/coachbloggzip_lsws
+        cp -a ${DOCROOT}/coachbloggzip ${DOCROOT}/coachbloggzip_nginx
     fi
 }
 

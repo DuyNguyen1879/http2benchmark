@@ -8,7 +8,8 @@ SERVER_LIST="lsws nginx"
 #SERVER_LIST="apache lsws nginx ols"
 TOOL_LIST="h2load wrk"
 #TOOL_LIST="h2load jmeter"
-TARGET_LIST="1kstatic.html 10kstatic.html 1kgzip-static.html 10kgzip-static.html 1knogzip.jpg amdepyc2.jpg amdepyc2.png wordpress coach-blog coach-blog-gzip"
+TARGET_LIST="1kstatic.html 1kgzip-static.html 1knogzip.jpg amdepyc2.jpg wordpress coachblog coachbloggzip"
+#TARGET_LIST="1kstatic.html 10kstatic.html 1kgzip-static.html 10kgzip-static.html 1knogzip.jpg amdepyc2.jpg amdepyc2.png wordpress coachblog coachbloggzip"
 #TARGET_LIST="1kstatic.html 1knogzip.jpg 10kstatic.html 100kstatic.html wordpress"
 
 CPU_THRESHOLD=30
@@ -40,7 +41,7 @@ TARGET_DOMAIN=""
 HEADER='Accept-Encoding: gzip,deflate'
 SERVER_VERSION='N/A'
 ROUNDNUM=3
-declare -A WEB_ARR=( [apache]=wp_apache/ [lsws]=wp_lsws/ [nginx]=wp_nginx/ [ols]=wp_lsws/)
+declare -A WEB_ARR=( [apache]=wp_apache/ [lsws]=wp_lsws/ [nginx]=wp_nginx/ [ols]=wp_lsws/ [apache-cb]=coachblog_apache/ [lsws-cb]=coachblog_lsws/ [nginx-cb]=coachblog_nginx/ [ols-cb]=coachblog_lsws/ [apache-cbg]=coachbloggzip_apache/ [lsws-cbg]=coachbloggzip_lsws/ [nginx-cbg]=coachbloggzip_nginx/ [ols-cbg]=coachbloggzip_lsws/)
 
 ###### H2Load
 CONCURRENT_STREAMS=$(grep '\-m' ${CLIENTCF}/h2load.conf  | awk '{print $NF}')
@@ -342,11 +343,11 @@ main_test(){
                 if [ "${TARGET}" = 'wordpress' ]; then
                     TARGET=${WEB_ARR["${SERVER}"]}
                 fi
-                if [ "${TARGET}" = 'coach-blog' ]; then
-                    TARGET='coach-blog/'
+                if [ "${TARGET}" = 'coachblog' ]; then
+                    TARGET=${WEB_ARR["${SERVER}-cb"]}
                 fi
-                if [ "${TARGET}" = 'coach-blog-gzip' ]; then
-                    TARGET='coach-blog/'
+                if [ "${TARGET}" = 'coachbloggzip' ]; then
+                    TARGET=${WEB_ARR["${SERVER}-cbg"]}
                 fi
                 echoY "      |--- https://${TARGET_DOMAIN}/${TARGET}"
                 if [ ${CHECK} = 'ON' ]; then
@@ -407,10 +408,10 @@ sort_log(){
             for SERVER in ${SERVER_LIST}; do
                 if [ "${TARGET}" = 'wordpress' ]; then
                     SORT_TARGET=${WEB_ARR["${SERVER}"]}
-                elif [ "${TARGET}" = 'coach-blog' ]; then
-                    SORT_TARGET='coach-blog/'
-                elif [ "${TARGET}" = 'coach-blog-gzip' ]; then
-                    SORT_TARGET='coach-blog-gzip/'
+                elif [ "${TARGET}" = 'coachblog' ]; then
+                    SORT_TARGET=${WEB_ARR["${SERVER}-cb"]}
+                elif [ "${TARGET}" = 'coachbloggzip' ]; then
+                    SORT_TARGET=${WEB_ARR["${SERVER}-cbg"]}
                 else
                     SORT_TARGET=${TARGET}
                 fi
@@ -495,10 +496,10 @@ parse_log() {
             for TARGET in ${TARGET_LIST}; do
                 if [ "${TARGET}" = 'wordpress' ]; then
                     TARGET=${WEB_ARR["${SERVER}"]}
-                elif [ "${TARGET}" = 'coach-blog' ]; then
-                    TARGET='coach-blog/'
-                elif [ "${TARGET}" = 'coach-blog-gzip' ]; then
-                    TARGET='coach-blog-gzip/'
+                elif [ "${TARGET}" = 'coachblog' ]; then
+                    TARGET=${WEB_ARR["${SERVER}-cb"]}
+                elif [ "${TARGET}" = 'coachbloggzip' ]; then
+                    TARGET=${WEB_ARR["${SERVER}-cbg"]}
                 fi
                 noext_target ${TARGET}
                 case ${TOOL} in

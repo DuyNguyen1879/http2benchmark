@@ -218,9 +218,20 @@ ubuntu_install_wrk(){
         cd ${CLIENTTOOL}/
         silent git clone https://github.com/wg/wrk.git wrk && cd wrk
         echoG 'Compiling wrk...'
-        silent make    
+        silent make -j$(nproc)    
         [[ -e ${CLIENTTOOL}/wrk/wrk ]] && echoG 'Install wrk Success' || echoR 'Install wrk Failed' 
     fi    
+    if [ -e ${CLIENTTOOL}/wrk-cmm/wrk-cmm ]; then 
+        echoG 'wrk-cmm already installed'  
+    else      
+        echoG 'Installing wrk-cmm'
+        cd ${CLIENTTOOL}/
+        silent git clone -b centminmod https://github.com/centminmod/wrk wrk-cmm && cd wrk-cmm
+        echoG 'Compiling wrk-cmm...'
+        silent make -j$(nproc)   
+        \cp -af wrk wrk-cmm
+        [[ -e ${CLIENTTOOL}/wrk-cmm/wrk-cmm ]] && echoG 'Install wrk-cmm Success' || echoR 'Install wrk-cmm Failed' 
+    fi   
 }
 
 centos_install_wrk(){
@@ -234,8 +245,19 @@ centos_install_wrk(){
         cd ${CLIENTTOOL}/
         silent git clone https://github.com/wg/wrk.git wrk && cd wrk
         echoG 'Compiling wrk...'
-        silent make   
+        silent make -j$(nproc)   
         [[ -e ${CLIENTTOOL}/wrk/wrk ]] && echoG 'Install wrk Success' || echoR 'Install wrk Failed' 
+    fi    
+    if [ -e ${CLIENTTOOL}/wrk-cmm/wrk-cmm ]; then 
+        echoG 'wrk-cmm already installed'  
+    else      
+        echoG 'Installing wrk-cmm'
+        cd ${CLIENTTOOL}/
+        silent git clone -b centminmod https://github.com/centminmod/wrk wrk-cmm && cd wrk-cmm
+        echoG 'Compiling wrk-cmm...'
+        silent make -j$(nproc)   
+        \cp -af wrk wrk-cmm
+        [[ -e ${CLIENTTOOL}/wrk-cmm/wrk-cmm ]] && echoG 'Install wrk-cmm Success' || echoR 'Install wrk-cmm Failed' 
     fi    
 }
 

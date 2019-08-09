@@ -428,7 +428,7 @@ sort_log(){
     for TARGET in ${TARGET_LIST}; do
         noext_target ${TARGET}
         for TOOL in ${TOOL_LIST}; do
-            printf "%s - %s\n" "${TOOL}" "${TARGET}"
+            printf "\n%s - %s\n" "${TOOL}" "${TARGET}"
             for SERVER in ${SERVER_LIST}; do
                 if [ "${TARGET}" = 'wordpress' ]; then
                     SORT_TARGET=${WEB_ARR["${SERVER}"]}
@@ -455,14 +455,14 @@ sort_log(){
 
                 if [[ ${ROUNDNUM} -ge 3 ]]; then
                     for ((ROUND=1; ROUND<=${ROUNDNUM}; ROUND++)); do
-                        REQUESTS_ARRAY+=($(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $12}'))
+                        REQUESTS_ARRAY+=($(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep -w ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $12}'))
                     done
 
                     IFS=$'\n' REQUESTS_ARRAY=($(sort <<< "${REQUESTS_ARRAY[*]}"))
                     unset IFS
 
-                    IGNORE_ARRAY+=($(cat ${BENDATE}/${RESULT_NAME}.csv | grep ${SORT_TARGET} | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | grep ${REQUESTS_ARRAY[0]} | head -n 1 | awk -F ',' '{print $2}'))
-                    IGNORE_ARRAY+=($(cat ${BENDATE}/${RESULT_NAME}.csv | grep ${SORT_TARGET} | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | grep ${REQUESTS_ARRAY[-1]} | head -n 1 | awk -F ',' '{print $2}'))
+                    IGNORE_ARRAY+=($(cat ${BENDATE}/${RESULT_NAME}.csv | grep ${SORT_TARGET} | grep -w ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | grep ${REQUESTS_ARRAY[0]} | head -n 1 | awk -F ',' '{print $2}'))
+                    IGNORE_ARRAY+=($(cat ${BENDATE}/${RESULT_NAME}.csv | grep ${SORT_TARGET} | grep -w ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | grep ${REQUESTS_ARRAY[-1]} | head -n 1 | awk -F ',' '{print $2}'))
                 fi
 
                 for ((ROUND=1; ROUND<=${ROUNDNUM}; ROUND++)); do
@@ -470,15 +470,15 @@ sort_log(){
                         continue
                     fi
                     # Get Time Spent and convert to S is MS
-                    TEMP_TIME_SPENT=$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $11}' | sed 's/.$//')
-                    TIME_METRIC=$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $11}' | tail -c 3)
+                    TEMP_TIME_SPENT=$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep -w ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $11}' | sed 's/.$//')
+                    TIME_METRIC=$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep -w ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $11}' | tail -c 3)
                     if [[ ${TIME_METRIC,,} == 'ms' ]]; then
                         TEMP_TIME_SPENT=$(awk "BEGIN {print ${TEMP_TIME_SPENT::-1}/1000}")
                     fi
                     TIME_SPENT=$(awk "BEGIN {print ${TIME_SPENT}+${TEMP_TIME_SPENT}}")
                     # Get BW Per Second and convert to MB if KB or GB
-                    TEMP_BW_PS=$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $13}' | sed 's/.$//' | sed 's/.$//')
-                    BW_METRIC=$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $13}' | tail -c 3)
+                    TEMP_BW_PS=$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep -w ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $13}' | sed 's/.$//' | sed 's/.$//')
+                    BW_METRIC=$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep -w ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $13}' | tail -c 3)
                     if [[ ${BW_METRIC,,} != 'mb' ]]; then
                         if [[ ${BW_METRIC,,} == 'kb' ]]; then
                             TEMP_BW_PS=$(awk "BEGIN {print ${TEMP_BW_PS}/1024}")
@@ -488,14 +488,14 @@ sort_log(){
                     fi
                     BANDWIDTH_PER_SECOND=$(awk "BEGIN {print ${BANDWIDTH_PER_SECOND}+${TEMP_BW_PS}}")
                     # Get Requests Per Second
-                    REQUESTS_PER_SECOND=$(awk "BEGIN {print ${REQUESTS_PER_SECOND}+$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $12}')}")
+                    REQUESTS_PER_SECOND=$(awk "BEGIN {print ${REQUESTS_PER_SECOND}+$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep -w ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $12}')}")
                     # Get Failed requests and if tool is WRK just make FAILED_REQUESTS equal to N/A
                     if [[ ${TOOL} == 'wrk' ]]; then
                         FAILED_REQUESTS='N/A'
                     elif [[ ${TOOL} == 'wrkcmm' ]]; then
                         FAILED_REQUESTS='N/A'
                     else
-                        FAILED_REQUESTS=$(awk "BEGIN {print ${FAILED_REQUESTS}+$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $16}')}")
+                        FAILED_REQUESTS=$(awk "BEGIN {print ${FAILED_REQUESTS}+$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep -w ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $16}')}")
                     fi
                     ((++ITERATIONS))
                 done

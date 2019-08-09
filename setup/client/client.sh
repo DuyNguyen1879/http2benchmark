@@ -408,7 +408,7 @@ check_spec(){
 
 mvexscript(){
     cd ${SCRIPTPATH}/
-    cp "${1}" "${2}"
+    \cp -f "${1}" "${2}"
     local FILENAME=$(echo "${1}" | awk -F '/' '{print $NF}')
     case "${FILENAME}" in
         *.sh) chmod +x ${2}/${FILENAME} ;; 

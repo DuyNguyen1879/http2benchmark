@@ -27,6 +27,7 @@ BENCHMARKLOG_H2="benchmark_H2.log"
 BENCHMARKLOG_SG="benchmark_SG.log"
 BENCHMARKLOG_JM="benchmark_JM.log"
 BENCHMARKLOG_WK="benchmark_WK.log"
+BENCHMARKLOG_WKCMM="benchmark_WKCMM.log"
 BENDATE="${CMDFD}/Benchmark/${DATE}"
 TESTSERVERIP="$(cat ${TEST_IP})"
 SSH=(ssh -o 'StrictHostKeyChecking=no' -i ~/.ssh/${SSHKEYNAME})
@@ -254,6 +255,17 @@ validate_tool(){
                 RUNWRK='false'
             fi
         fi
+        if [ ${TOOL} = 'wrkcmm' ]; then
+            ### Check wrkcmm
+            ${CLIENTTOOL}/wrkcmm/wrkcmm -v | grep -i Copyright >/dev/null 2>&1
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run wrkcmm'
+                RUNWRKcmm='true'
+            else
+                echoR '[Failed] to run wrkcmm'
+                RUNWRK='false'
+            fi
+        fi
     done
 }
 
@@ -293,6 +305,14 @@ wrk_benchmark(){
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
     echo "Benchmark Command: wrk ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
     ./wrk ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+wrkcmm_benchmark(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_WKCMM}.${4}"
+    cd ${CLIENTTOOL}/wrkcmm
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: wrkcmm ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    ./wrkcmm ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 
 server_switch(){
@@ -381,6 +401,10 @@ main_test(){
                             sleep ${INTERVAL}
                             wrk_benchmark ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
                         fi
+                        if [ ${TOOL} = 'wrkcmm' ] && [ "${RUNWRK}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            wrkcmm_benchmark ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
                     done
                     if [ ${CHECK} = 'ON' ]; then
                         sleep ${INTERVAL}
@@ -468,6 +492,8 @@ sort_log(){
                     # Get Failed requests and if tool is WRK just make FAILED_REQUESTS equal to N/A
                     if [[ ${TOOL} == 'wrk' ]]; then
                         FAILED_REQUESTS='N/A'
+                    elif [[ ${TOOL} == 'wrkcmm' ]]; then
+                        FAILED_REQUESTS='N/A'
                     else
                         FAILED_REQUESTS=$(awk "BEGIN {print ${FAILED_REQUESTS}+$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $16}')}")
                     fi
@@ -478,6 +504,8 @@ sort_log(){
                 BANDWIDTH_PER_SECOND=$(awk "BEGIN {print ${BANDWIDTH_PER_SECOND}/${ITERATIONS}}")
                 REQUESTS_PER_SECOND=$(awk "BEGIN {print ${REQUESTS_PER_SECOND}/${ITERATIONS}}")
                 if [[ ${TOOL} == 'wrk' ]]; then
+                    FAILED_REQUESTS='N/A'
+                elif [[ ${TOOL} == 'wrkcmm' ]]; then
                     FAILED_REQUESTS='N/A'
                 else
                     FAILED_REQUESTS=$(awk "BEGIN {print ${FAILED_REQUESTS}/${ITERATIONS}}")
@@ -507,6 +535,7 @@ parse_log() {
                     h2load) BENCHMARKLOG=${BENCHMARKLOG_H2} ;;
                     jmeter) BENCHMARKLOG=${BENCHMARKLOG_JM} ;;
                     wrk)    BENCHMARKLOG=${BENCHMARKLOG_WK} ;;
+                    wrkcmm) BENCHMARKLOG=${BENCHMARKLOG_WKCMM} ;;
                 esac
                 if [ ${TOOL} != 'h2load' ]; then
                     PARSE_CONCURRENT_STREAMS='N/A'

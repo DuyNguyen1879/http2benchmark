@@ -67,12 +67,6 @@ Run the following command in client server:
 /opt/benchmark.sh | tee benchmark.log
 ```
 
-You can optionally test against wrk forked version [`wrk-cmm`](https://github.com/centminmod/wrk/tree/centminmod) by editing `/opt/benchmark.sh` adding it to `TOOL_LIST`:
-
-```
-TOOL_LIST="h2load wrk wrkcmm"
-```
-
 ## Log 
 After benchmark testing is complete, you will see the result displayed on the console
 

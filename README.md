@@ -70,7 +70,7 @@ Run the following command in client server:
 You can optionally test against wrk forked version [`wrk-cmm`](https://github.com/centminmod/wrk/tree/centminmod) by editing `/opt/benchmark.sh` adding it to `TOOL_LIST`:
 
 ```
-TOOL_LIST="h2load wrk wrk-cmm"
+TOOL_LIST="h2load wrk wrkcmm"
 ```
 
 ## Log 

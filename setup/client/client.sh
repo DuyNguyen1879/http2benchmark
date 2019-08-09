@@ -18,7 +18,7 @@ JMFD='apache-jmeter'
 JMPLAN='jmeter.jmx'
 JMCFPATH="${CLIENTTOOL}/${JMFD}/bin/examples/${JMPLAN}"
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
-CONF_LIST="urls.conf h2load.conf jmeter.jmx siege.conf wrk.conf wrk-cmm.conf"
+CONF_LIST="urls.conf h2load.conf jmeter.jmx siege.conf wrk.conf wrkcmm.conf"
 SERVER_LIST="apache lsws nginx ols"
 
 silent() {
@@ -221,16 +221,16 @@ ubuntu_install_wrk(){
         silent make -j$(nproc)    
         [[ -e ${CLIENTTOOL}/wrk/wrk ]] && echoG 'Install wrk Success' || echoR 'Install wrk Failed' 
     fi    
-    if [ -e ${CLIENTTOOL}/wrk-cmm/wrk-cmm ]; then 
-        echoG 'wrk-cmm already installed'  
+    if [ -e ${CLIENTTOOL}/wrkcmm/wrkcmm ]; then 
+        echoG 'wrkcmm already installed'  
     else      
-        echoG 'Installing wrk-cmm'
+        echoG 'Installing wrkcmm'
         cd ${CLIENTTOOL}/
-        silent git clone -b centminmod https://github.com/centminmod/wrk wrk-cmm && cd wrk-cmm
-        echoG 'Compiling wrk-cmm...'
+        silent git clone -b centminmod https://github.com/centminmod/wrk wrkcmm && cd wrkcmm
+        echoG 'Compiling wrkcmm...'
         silent make -j$(nproc)   
-        \cp -af wrk wrk-cmm
-        [[ -e ${CLIENTTOOL}/wrk-cmm/wrk-cmm ]] && echoG 'Install wrk-cmm Success' || echoR 'Install wrk-cmm Failed' 
+        \cp -af wrk wrkcmm
+        [[ -e ${CLIENTTOOL}/wrkcmm/wrkcmm ]] && echoG 'Install wrkcmm Success' || echoR 'Install wrkcmm Failed' 
     fi   
 }
 
@@ -248,16 +248,16 @@ centos_install_wrk(){
         silent make -j$(nproc)   
         [[ -e ${CLIENTTOOL}/wrk/wrk ]] && echoG 'Install wrk Success' || echoR 'Install wrk Failed' 
     fi    
-    if [ -e ${CLIENTTOOL}/wrk-cmm/wrk-cmm ]; then 
-        echoG 'wrk-cmm already installed'  
+    if [ -e ${CLIENTTOOL}/wrkcmm/wrkcmm ]; then 
+        echoG 'wrkcmm already installed'  
     else      
-        echoG 'Installing wrk-cmm'
+        echoG 'Installing wrkcmm'
         cd ${CLIENTTOOL}/
-        silent git clone -b centminmod https://github.com/centminmod/wrk wrk-cmm && cd wrk-cmm
-        echoG 'Compiling wrk-cmm...'
+        silent git clone -b centminmod https://github.com/centminmod/wrk wrkcmm && cd wrkcmm
+        echoG 'Compiling wrkcmm...'
         silent make -j$(nproc)   
-        \cp -af wrk wrk-cmm
-        [[ -e ${CLIENTTOOL}/wrk-cmm/wrk-cmm ]] && echoG 'Install wrk-cmm Success' || echoR 'Install wrk-cmm Failed' 
+        \cp -af wrk wrkcmm
+        [[ -e ${CLIENTTOOL}/wrkcmm/wrkcmm ]] && echoG 'Install wrkcmm Success' || echoR 'Install wrkcmm Failed' 
     fi    
 }
 

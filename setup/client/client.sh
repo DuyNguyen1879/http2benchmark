@@ -18,7 +18,7 @@ JMFD='apache-jmeter'
 JMPLAN='jmeter.jmx'
 JMCFPATH="${CLIENTTOOL}/${JMFD}/bin/examples/${JMPLAN}"
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
-CONF_LIST="urls.conf h2load.conf jmeter.jmx siege.conf wrk.conf"
+CONF_LIST="urls.conf h2load.conf jmeter.jmx siege.conf wrk.conf wrk-cmm.conf"
 SERVER_LIST="apache lsws nginx ols"
 
 silent() {

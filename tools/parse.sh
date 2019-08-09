@@ -101,6 +101,8 @@ function main() {
       parse_h2load ${ITERATION}
     elif [[ ${BENCHMARK_TOOL} == 'wrk' ]]; then
       parse_wrk ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'wrkcmm' ]]; then
+      parse_wrk ${ITERATION}
     fi
 
     generate_csv "${ITERATION}"

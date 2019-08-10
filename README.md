@@ -1,7 +1,27 @@
 # HTTP2Benchmark
 [<img src="https://img.shields.io/badge/Made%20with-BASH-orange.svg">](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) 
 
-`extended-tests` branch can be searched via [Sourcegraph](https://sourcegraph.com/github.com/centminmod/http2benchmark@extended-tests)
+`extended-tests` forked branch can be searched via [Sourcegraph](https://sourcegraph.com/github.com/centminmod/http2benchmark@extended-tests)
+
+# Web servers
+
+This forked version also adds ability to switch from testing Nginx 1.16 stable version to testing Nginx mainline 1.17 version via a new `setup/server/server.sh` variable `NGINX_MAINLINE='n'` which is default disabled to test original Nginx 1.16 stable version. Setting to `NGINX_MAINLINE='y'` prior to running `setup/server/server.sh` will install Nginx mainline 1.17 instead.
+
+# Test Tools
+
+This forked version adds to `/opt/benchmark.sh` some additional test tools and testing profiles to the original mix of h2load, wrk, siege, jmeter of which h2load and wrk are enabled by default. The following test tools are available and defined in variable which defaults to `TOOL_LIST="h2load wrk"`:
+
+* h2load - nghttp2 library's [h2load HTTP/2 HTTPS load testing tool](https://nghttp2.org/documentation/h2load-howto.html).
+* h2load-low - h2load test but with reduced request number tested instead of h2load's 100,000 requests test, reduced to 5,000 requests to allow testing on network constrained systems <=1Gbps.
+* h2load-m80 - h2load test with one minor change with more realistic HTTP/2 max concurrent streams = 80 given the average web site has approximately 74 assets according to [HTTP Archive](https://httparchive.org/reports/page-weight#reqTotal).
+* wrk - original HTTP/1.1 load testing tool from https://github.com/wg/wrk
+* wrkcmm - forked version of wrk with additional features outlined at https://github.com/centminmod/wrk/tree/centminmod. By default tests same paramters as original wrk.
+
+So if you were to run additional test tools, you'd edit `/opt/benchmark.sh` like below:
+
+```
+TOOL_LIST="h2load h2load-low h2load-m80 wrk wrkcmm"
+```
 
 # Test Targets
 

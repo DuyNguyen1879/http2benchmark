@@ -99,6 +99,10 @@ function main() {
   for (( ITERATION = 1; ITERATION<=${ITERATIONS}; ITERATION++)); do
     if [[ ${BENCHMARK_TOOL} == 'h2load' ]]; then
       parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-low' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80' ]]; then
+      parse_h2load ${ITERATION}
     elif [[ ${BENCHMARK_TOOL} == 'wrk' ]]; then
       parse_wrk ${ITERATION}
     elif [[ ${BENCHMARK_TOOL} == 'wrkcmm' ]]; then

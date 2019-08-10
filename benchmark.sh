@@ -7,8 +7,10 @@
 SERVER_LIST="lsws nginx"
 #SERVER_LIST="apache lsws nginx ols"
 TOOL_LIST="h2load wrk"
+#TOOL_LIST="h2load h2load-low h2load-m80 wrk"
 #TOOL_LIST="h2load jmeter"
 TARGET_LIST="1kstatic.html 1kgzip-static.html 1knogzip.jpg amdepyc2.jpg.webp amdepyc2.jpg wordpress coachblog coachbloggzip"
+#TARGET_LIST="1kstatic.html 1kgzip-static.html amdepyc2.jpg.webp amdepyc2.jpg wordpress coachblog coachbloggzip"
 #TARGET_LIST="1kstatic.html 10kstatic.html 1kgzip-static.html 10kgzip-static.html 1knogzip.jpg amdepyc2.jpg amdepyc2.png wordpress coachblog coachbloggzip"
 #TARGET_LIST="1kstatic.html 1knogzip.jpg 10kstatic.html 100kstatic.html wordpress"
 
@@ -24,6 +26,8 @@ CLIENTTOOL="${CMDFD}/tools"
 CLIENTCF="${CLIENTTOOL}/config"
 TEST_IP="${ENVFD}/ip.log"
 BENCHMARKLOG_H2="benchmark_H2.log"
+BENCHMARKLOG_H2_LOW="benchmark_H2LOW.log"
+BENCHMARKLOG_H2_M80="benchmark_H2M80.log"
 BENCHMARKLOG_SG="benchmark_SG.log"
 BENCHMARKLOG_JM="benchmark_JM.log"
 BENCHMARKLOG_WK="benchmark_WK.log"
@@ -233,6 +237,28 @@ validate_tool(){
                 RUNH2LOAD='false'
             fi
         fi
+        if [ ${TOOL} = 'h2load-low' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-low'
+                RUNH2LOAD_LOW='true'
+            else
+                echoR '[Failed] to run h2load-m80'
+                RUNH2LOAD_LOW='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-m80' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-m80'
+                RUNH2LOAD_M80='true'
+            else
+                echoR '[Failed] to run h2load-m80'
+                RUNH2LOAD_M80='false'
+            fi
+        fi
         if [ ${TOOL} = 'siege' ]; then
             ### Check Siege
             silent siege -V
@@ -282,6 +308,20 @@ siege_benchmark(){
 }
 h2load_benchmark(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_low(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_LOW}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_m80(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_M80}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
     echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
@@ -392,6 +432,14 @@ main_test(){
                         if [ ${TOOL} = 'h2load' ] && [ "${RUNH2LOAD}" = 'true' ]; then
                             sleep ${INTERVAL}
                             h2load_benchmark  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-low' ] && [ "${RUNH2LOAD_LOW}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_low  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-m80' ] && [ "${RUNH2LOAD_M80}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_m80  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
                         fi
                         if [ ${TOOL} = 'jmeter' ] && [ "${RUNJMETER}" = 'true' ]; then
                             sleep ${INTERVAL}
@@ -533,6 +581,8 @@ parse_log() {
                 case ${TOOL} in
                     siege)  BENCHMARKLOG=${BENCHMARKLOG_SG} ;;
                     h2load) BENCHMARKLOG=${BENCHMARKLOG_H2} ;;
+                    h2load-low) BENCHMARKLOG=${BENCHMARKLOG_H2_LOW} ;;
+                    h2load-m80) BENCHMARKLOG=${BENCHMARKLOG_H2_M80} ;;
                     jmeter) BENCHMARKLOG=${BENCHMARKLOG_JM} ;;
                     wrk)    BENCHMARKLOG=${BENCHMARKLOG_WK} ;;
                     wrkcmm) BENCHMARKLOG=${BENCHMARKLOG_WKCMM} ;;

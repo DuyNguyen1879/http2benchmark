@@ -767,6 +767,9 @@ EOC
     if [ ! -e ${DOCROOT}/1kstatic.jpg ]; then
         silent dd if=/dev/zero of=${DOCROOT}/1knogzip.jpg bs=1K count=1 
     fi 
+### Install 11kb webp image
+    echoG 'Install Target: /amdepyc2.jpg.webp'
+    cp ../../sitefiles/amdepyc2.jpg.webp ${DOCROOT}
 ### Install 26kb jpg image
     echoG 'Install Target: /amdepyc2.jpg'
     cp ../../sitefiles/amdepyc2.jpg ${DOCROOT}

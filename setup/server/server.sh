@@ -20,6 +20,7 @@ MARIAVER='10.3'
 REPOPATH=''
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 SERVER_LIST="apache lsws nginx"
+NGINX_MAINLINE='n'
 declare -A WEB_ARR=( [apache]=wp_apache [lsws]=wp_lsws [nginx]=wp_nginx )
 
 if [ ! -d ${DOCROOT} ]; then 
@@ -494,6 +495,25 @@ ubuntu_install_nginx(){
     checkweb nginx
 }
 
+ubuntu_install_nginx_ml(){
+    echoG 'Install Nginx Web Server'
+    if [ -e /usr/sbin/nginx ]; then 
+        echoY "Remove existing old nginx" 
+        rm_old_pkg nginx 
+    fi     
+    echo "deb http://nginx.org/packages/mainline/debian `lsb_release -cs` nginx" \
+        | sudo tee /etc/apt/sources.list.d/nginx.list >/dev/null 2>&1
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add - >/dev/null 2>&1
+    apt-get update >/dev/null 2>&1
+    apt install nginx -y >/dev/null 2>&1
+    systemctl start nginx
+    SERVERV=$(echo $(/usr/sbin/nginx -v 2>&1) 2>&1)
+    SERVERV=$(echo ${SERVERV} | grep -o '[0-9.]*')
+    echoG "Version: nginx ${SERVERV}" 
+    echo  "Version: nginx ${SERVERV}" >> ${SERVERACCESS} 
+    checkweb nginx
+}
+
 centos_install_nginx(){
     echoG 'Install Nginx Web Server'
     if [ -e /usr/sbin/nginx ]; then 
@@ -506,6 +526,36 @@ name=nginx stable repo
 baseurl=http://nginx.org/packages/centos/\$releasever/\$basearch/
 gpgcheck=0
 enabled=1   
+EOM
+    silent yum install nginx -y
+    systemctl start nginx
+    SERVERV=$(echo $(/usr/sbin/nginx -v 2>&1) 2>&1)
+    SERVERV=$(echo ${SERVERV} | grep -o '[0-9.]*$')
+    echoG "Version: nginx ${SERVERV}" 
+    echo "Version: nginx ${SERVERV}" >> ${SERVERACCESS} 
+    checkweb nginx
+}
+
+centos_install_nginx_ml(){
+    echoG 'Install Nginx Web Server'
+    if [ -e /usr/sbin/nginx ]; then 
+        echoY "Remove existing old nginx" 
+        rm_old_pkg nginx 
+    fi     
+    cat > ${REPOPATH}/nginx.repo << EOM
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://nginx.org/packages/centos/\$releasever/\$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=https://nginx.org/keys/nginx_signing.key
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://nginx.org/packages/mainline/centos/\$releasever/\$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
 EOM
     silent yum install nginx -y
     systemctl start nginx
@@ -595,7 +645,17 @@ centos_install_php(){
     NEWKEY='listen.mode = 0660'
     line_change 'listen.mode = ' ${FPMCONF} "${NEWKEY}"  
 
-    #TODO: FETCH SAME PHP INI       
+    echo "ulimit -n 524288" >> /etc/rc.local
+    if [[ ! "$(grep '/var/run/php' /etc/rc.local)" ]]; then
+      echo 'if [ ! -d /var/run/php/ ]; then mkdir -p /var/run/php/; fi' >> /etc/rc.local
+    fi
+    chmod +x /etc/rc.d/rc.local
+    silent pushd /etc
+    silent ln -s rc.d/rc.local /etc/rc.local;
+    silent popd
+    silent systemctl daemon-reload
+    silent systemctl start rc-local.service
+    silent systemctl status rc-local.service
 }    
 
 ### Setup Test site
@@ -870,7 +930,11 @@ ubuntu_main(){
     ubuntu_install_pkg
     ubuntu_install_apache
     ubuntu_install_lsws
-    ubuntu_install_nginx
+    if [[ "$NGINX_MAINLINE" = [yY] ]]; then
+        ubuntu_install_nginx_ml
+    else
+        ubuntu_install_nginx
+    fi
     ubuntu_install_ols
     ubuntu_install_php
 }
@@ -880,7 +944,11 @@ centos_main(){
     centos_install_pkg
     centos_install_apache
     centos_install_lsws
-    centos_install_nginx
+    if [[ "$NGINX_MAINLINE" = [yY] ]]; then
+        centos_install_nginx_ml
+    else
+        centos_install_nginx
+    fi
     centos_install_ols
     centos_install_php
 }

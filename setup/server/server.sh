@@ -788,7 +788,7 @@ EOC
 ### https://github.com/centminmod/testpages
     if [ ! -d ${DOCROOT}/coachblog ]; then
         echoG 'Install Target: /coachblog'
-        silent svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coachblog ${DOCROOT}/coachblog
+        silent svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coach-blog ${DOCROOT}/coachblog
         cp -a ${DOCROOT}/coachblog ${DOCROOT}/coachblog_apache
         cp -a ${DOCROOT}/coachblog ${DOCROOT}/coachblog_lsws
         cp -a ${DOCROOT}/coachblog ${DOCROOT}/coachblog_nginx
@@ -797,7 +797,7 @@ EOC
 ### https://github.com/centminmod/testpages
     if [ ! -d ${DOCROOT}/coachbloggzip ]; then
         echoG 'Install Target: /coachbloggzip'
-        silent svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coachblog ${DOCROOT}/coachbloggzip
+        silent svn export https://github.com/centminmod/testpages/trunk/wordpress/oceanwp/coach-blog ${DOCROOT}/coachbloggzip
         find ${DOCROOT}/coachbloggzip -type f \( -name "*.html" -o -name "*.css" -o -name "*.js" \) -exec sh -c "gzip -9 -c {} > {}.gz" \;
         # find ${DOCROOT}/coachbloggzip -type f \( -name "*.html.gz" -o -name "*.css.gz" -o -name "*.js.gz" \)
         cp -a ${DOCROOT}/coachbloggzip ${DOCROOT}/coachbloggzip_apache
@@ -849,7 +849,9 @@ cpuprocess(){
         ### Nginx workers      
         sed -i 's/worker_processes  1;/worker_processes  2;/g' ${NGDIR}/nginx.conf
         ### OLS
-        sed -i 's/<binding>1<\/binding>/<binding>2<\/binding>/g' ${OLSDIR}/conf/httpd_config.xml
+        if [ -f "${OLSDIR}/conf/httpd_config.xml" ]; then
+            sed -i 's/<binding>1<\/binding>/<binding>2<\/binding>/g' ${OLSDIR}/conf/httpd_config.xml
+        fi
         
     fi
 }

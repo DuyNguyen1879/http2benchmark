@@ -21,9 +21,9 @@ So if you were to run additional test tools, you'd edit `/opt/benchmark.sh` like
 
 ```
 TOOL_LIST="h2load h2load-low h2load-m80 wrk wrkcmm"
+```
 
 Example benchmark results posted [here](https://gist.github.com/centminmod/6980694c38dc39c5fc9325b581cfd036).
-```
 
 # Test Targets
 

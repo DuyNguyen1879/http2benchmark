@@ -103,6 +103,30 @@ function main() {
       parse_h2load ${ITERATION}
     elif [[ ${BENCHMARK_TOOL} == 'h2load-m80' ]]; then
       parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load_ecc128' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-low_ecc128' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80_ecc128' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load_ecc256' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-low_ecc256' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80_ecc256' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load_rsa128' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-low_rsa128' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80_rsa128' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load_rsa256' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-low_rsa256' ]]; then
+      parse_h2load ${ITERATION}
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80_rsa256' ]]; then
+      parse_h2load ${ITERATION}
     elif [[ ${BENCHMARK_TOOL} == 'wrk' ]]; then
       parse_wrk ${ITERATION}
     elif [[ ${BENCHMARK_TOOL} == 'wrkcmm' ]]; then

@@ -8,6 +8,7 @@ SERVER_LIST="lsws nginx"
 #SERVER_LIST="apache lsws nginx ols"
 TOOL_LIST="h2load wrk"
 #TOOL_LIST="h2load h2load-low h2load-m80 wrk"
+#TOOL_LIST="h2load h2load-low h2load-m80 h2load-ecc256 h2load-low-ecc256 h2load-m80-ecc256 wrk"
 #TOOL_LIST="h2load jmeter"
 TARGET_LIST="1kstatic.html 1kgzip-static.html 1knogzip.jpg amdepyc2.jpg.webp amdepyc2.jpg wordpress coachblog coachbloggzip"
 #TARGET_LIST="1kstatic.html 1kgzip-static.html amdepyc2.jpg.webp amdepyc2.jpg wordpress coachblog coachbloggzip"
@@ -28,6 +29,18 @@ TEST_IP="${ENVFD}/ip.log"
 BENCHMARKLOG_H2="benchmark_H2.log"
 BENCHMARKLOG_H2_LOW="benchmark_H2LOW.log"
 BENCHMARKLOG_H2_M80="benchmark_H2M80.log"
+BENCHMARKLOG_H2_ECC128="benchmark_H2_ECC128.log"
+BENCHMARKLOG_H2_LOW_ECC128="benchmark_H2LOW_ECC128.log"
+BENCHMARKLOG_H2_M80_ECC128="benchmark_H2M80_ECC128.log"
+BENCHMARKLOG_H2_ECC256="benchmark_H2_ECC256.log"
+BENCHMARKLOG_H2_LOW_ECC256="benchmark_H2LOW_ECC256.log"
+BENCHMARKLOG_H2_M80_ECC256="benchmark_H2M80_ECC256.log"
+BENCHMARKLOG_H2_RSA128="benchmark_H2_RSA128.log"
+BENCHMARKLOG_H2_LOW_RSA128="benchmark_H2LOW_RSA128.log"
+BENCHMARKLOG_H2_M80_RSA128="benchmark_H2M80_RSA128.log"
+BENCHMARKLOG_H2_RSA256="benchmark_H2_RSA256.log"
+BENCHMARKLOG_H2_LOW_RSA256="benchmark_H2LOW_RSA256.log"
+BENCHMARKLOG_H2_M80_RSA256="benchmark_H2M80_RSA256.log"
 BENCHMARKLOG_SG="benchmark_SG.log"
 BENCHMARKLOG_JM="benchmark_JM.log"
 BENCHMARKLOG_WK="benchmark_WK.log"
@@ -259,6 +272,138 @@ validate_tool(){
                 RUNH2LOAD_M80='false'
             fi
         fi
+        if [ ${TOOL} = 'h2load-ecc128' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-ecc128'
+                RUNH2LOAD_ECC128='true'
+            else
+                echoR '[Failed] to run h2load-ecc128'
+                RUNH2LOAD_ECC128='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-low-ecc128' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-low-ecc128'
+                RUNH2LOAD_LOW_ECC128='true'
+            else
+                echoR '[Failed] to run h2load-m80-ecc128'
+                RUNH2LOAD_LOW_ECC128='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-m80-ecc128' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-m80-ecc128'
+                RUNH2LOAD_M80_ECC128='true'
+            else
+                echoR '[Failed] to run h2load-m80-ecc128'
+                RUNH2LOAD_M80_ECC128='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-ecc256' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-ecc256'
+                RUNH2LOAD_ECC256='true'
+            else
+                echoR '[Failed] to run h2load-ecc256'
+                RUNH2LOAD_ECC256='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-low-ecc256' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-low-ecc256'
+                RUNH2LOAD_LOW_ECC256='true'
+            else
+                echoR '[Failed] to run h2load-m80-ecc256'
+                RUNH2LOAD_LOW_ECC256='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-m80-ecc256' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-m80-ecc256'
+                RUNH2LOAD_M80_ECC256='true'
+            else
+                echoR '[Failed] to run h2load-m80-ecc256'
+                RUNH2LOAD_M80_ECC256='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-rsa128' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-rsa128'
+                RUNH2LOAD_RSA128='true'
+            else
+                echoR '[Failed] to run h2load-rsa128'
+                RUNH2LOAD_RSA128='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-low-rsa128' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-low-rsa128'
+                RUNH2LOAD_LOW_RSA128='true'
+            else
+                echoR '[Failed] to run h2load-m80-rsa128'
+                RUNH2LOAD_LOW_RSA128='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-m80-rsa128' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-m80-rsa128'
+                RUNH2LOAD_M80_RSA128='true'
+            else
+                echoR '[Failed] to run h2load-m80-rsa128'
+                RUNH2LOAD_M80_RSA128='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-rsa256' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-rsa256'
+                RUNH2LOAD_RSA256='true'
+            else
+                echoR '[Failed] to run h2load-rsa256'
+                RUNH2LOAD_RSA256='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-low-rsa256' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-low-rsa256'
+                RUNH2LOAD_LOW_RSA256='true'
+            else
+                echoR '[Failed] to run h2load-m80-rsa256'
+                RUNH2LOAD_LOW_RSA256='false'
+            fi
+        fi
+        if [ ${TOOL} = 'h2load-m80-rsa256' ]; then
+            ### Check h2load
+            silent h2load --version
+            if [ ${?} = 0 ]; then
+                echoG '[OK] to run h2load-m80-rsa256'
+                RUNH2LOAD_M80_RSA256='true'
+            else
+                echoR '[Failed] to run h2load-m80-rsa256'
+                RUNH2LOAD_M80_RSA256='false'
+            fi
+        fi
         if [ ${TOOL} = 'siege' ]; then
             ### Check Siege
             silent siege -V
@@ -327,6 +472,93 @@ h2load_benchmark_m80(){
     echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
     h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
+
+h2load_benchmark_ecc128(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_ECC128}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_low_ecc128(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_LOW_ECC128}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_m80_ecc128(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_M80_ECC128}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_ecc256(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_ECC256}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_low_ecc256(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_LOW_ECC256}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_m80_ecc256(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_M80_ECC256}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+
+h2load_benchmark_rsa128(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_RSA128}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_low_rsa128(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_LOW_RSA128}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_m80_rsa128(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_M80_RSA128}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_rsa256(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_RSA256}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_low_rsa256(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_LOW_RSA256}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+h2load_benchmark_m80_rsa256(){
+    MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_M80_RSA256}.${4}"
+    echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
+    target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
+    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
+    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+}
+
 jmeter_benchmark(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_JM}.${4}"
     cd ${CLIENTTOOL}/${JMFD}/bin
@@ -441,6 +673,57 @@ main_test(){
                             sleep ${INTERVAL}
                             h2load_benchmark_m80  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
                         fi
+
+                        if [ ${TOOL} = 'h2load-ecc128' ] && [ "${RUNH2LOAD_ECC128}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_ecc128  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-low-ecc128' ] && [ "${RUNH2LOAD_LOW_ECC128}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_low_ecc128  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-m80-ecc128' ] && [ "${RUNH2LOAD_M80_ECC128}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_m80_ecc128  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-ecc256' ] && [ "${RUNH2LOAD_ECC256}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_ecc256  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-low-ecc256' ] && [ "${RUNH2LOAD_LOW_ECC256}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_low_ecc256  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-m80-ecc256' ] && [ "${RUNH2LOAD_M80_ECC256}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_m80_ecc256  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+
+                        if [ ${TOOL} = 'h2load-rsa128' ] && [ "${RUNH2LOAD_RSA128}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_rsa128  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-low-rsa128' ] && [ "${RUNH2LOAD_LOW_RSA128}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_low_rsa128  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-m80-rsa128' ] && [ "${RUNH2LOAD_M80_RSA128}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_m80_rsa128  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-rsa256' ] && [ "${RUNH2LOAD_RSA256}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_rsa256  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-low-rsa256' ] && [ "${RUNH2LOAD_LOW_RSA256}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_low_rsa256  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+                        if [ ${TOOL} = 'h2load-m80-rsa256' ] && [ "${RUNH2LOAD_M80_RSA256}" = 'true' ]; then
+                            sleep ${INTERVAL}
+                            h2load_benchmark_m80_rsa256  ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
+                        fi
+
                         if [ ${TOOL} = 'jmeter' ] && [ "${RUNJMETER}" = 'true' ]; then
                             sleep ${INTERVAL}
                             jmeter_benchmark ${TARGET_DOMAIN} ${TARGET} ${SERVER} ${ROUND}
@@ -583,6 +866,18 @@ parse_log() {
                     h2load) BENCHMARKLOG=${BENCHMARKLOG_H2} ;;
                     h2load-low) BENCHMARKLOG=${BENCHMARKLOG_H2_LOW} ;;
                     h2load-m80) BENCHMARKLOG=${BENCHMARKLOG_H2_M80} ;;
+                    h2load-ecc128) BENCHMARKLOG=${BENCHMARKLOG_H2_ECC128} ;;
+                    h2load-low-ecc128) BENCHMARKLOG=${BENCHMARKLOG_H2_LOW_ECC128} ;;
+                    h2load-m80-ecc128) BENCHMARKLOG=${BENCHMARKLOG_H2_M80_ECC128} ;;
+                    h2load-ecc256) BENCHMARKLOG=${BENCHMARKLOG_H2_ECC256} ;;
+                    h2load-low-ecc256) BENCHMARKLOG=${BENCHMARKLOG_H2_LOW_ECC256} ;;
+                    h2load-m80-ecc256) BENCHMARKLOG=${BENCHMARKLOG_H2_M80_ECC256} ;;
+                    h2load-rsa128) BENCHMARKLOG=${BENCHMARKLOG_H2_RSA128} ;;
+                    h2load-low-rsa128) BENCHMARKLOG=${BENCHMARKLOG_H2_LOW_RSA128} ;;
+                    h2load-m80-rsa128) BENCHMARKLOG=${BENCHMARKLOG_H2_M80_RSA128} ;;
+                    h2load-rsa256) BENCHMARKLOG=${BENCHMARKLOG_H2_RSA256} ;;
+                    h2load-low-rsa256) BENCHMARKLOG=${BENCHMARKLOG_H2_LOW_RSA256} ;;
+                    h2load-m80-rsa256) BENCHMARKLOG=${BENCHMARKLOG_H2_M80_RSA256} ;;
                     jmeter) BENCHMARKLOG=${BENCHMARKLOG_JM} ;;
                     wrk)    BENCHMARKLOG=${BENCHMARKLOG_WK} ;;
                     wrkcmm) BENCHMARKLOG=${BENCHMARKLOG_WKCMM} ;;

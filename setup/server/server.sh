@@ -387,7 +387,7 @@ centos_install_apache(){
     if [ ! -f ${REPOPATH}/ius.repo ]; then 
         echoR "[Failed] to add ${APACHENAME} repository"
     fi 
-    if [ -f ${REPOPATH}/ius.repo ]; then 
+    if [[ -f ${CMDFD}/setup-ius.sh && -f ${REPOPATH}/ius.repo ]]; then 
         HTTPDNAME=$(yum list httpd*u | awk -F '.' '/httpd./{print $1}')
         silent yum install ${HTTPDNAME} -y
         silent systemctl start ${APACHENAME}

@@ -387,9 +387,9 @@ centos_install_apache(){
     if [ ! -f ${REPOPATH}/ius.repo ]; then 
         echoR "[Failed] to add ${APACHENAME} repository"
     fi 
-    if [[ -f ${CMDFD}/setup-ius.sh && -f ${REPOPATH}/ius.repo ]]; then 
-        HTTPDNAME=$(yum list httpd*u | awk -F '.' '/httpd./{print $1}')
-        silent yum install ${HTTPDNAME} -y
+    if [ -f ${REPOPATH}/ius.repo ]; then 
+        HTTPDNAME=$(yum list httpd*u --enablerepo=ius | awk -F '.' '/httpd./{print $1}')
+        silent yum install ${HTTPDNAME} --enablerepo=ius -y
         silent systemctl start ${APACHENAME}
         SERVERV=$(echo $(httpd -v | grep version) | awk '{print substr ($3,8,9)}')
         /usr/bin/yum-config-manager --disable ius >/dev/null 2>&1

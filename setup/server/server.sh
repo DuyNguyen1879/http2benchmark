@@ -384,17 +384,19 @@ centos_install_apache(){
     chmod 0755 ${CMDFD}/setup-ius.sh 
     silent bash ${CMDFD}/setup-ius.sh 
     rm -f ${CMDFD}/setup-ius.sh 
-    if [ ! -e ${REPOPATH}/ius.repo ]; then 
+    if [ ! -f ${REPOPATH}/ius.repo ]; then 
         echoR "[Failed] to add ${APACHENAME} repository"
     fi 
-    HTTPDNAME=$(yum list httpd*u | awk -F '.' '/httpd./{print $1}')
-    silent yum install ${HTTPDNAME} -y
-    silent systemctl start ${APACHENAME}
-    SERVERV=$(echo $(httpd -v | grep version) | awk '{print substr ($3,8,9)}')
-    /usr/bin/yum-config-manager --disable ius >/dev/null 2>&1
-    checkweb ${APACHENAME}
-    echoG "Version: apache ${SERVERV}"
-    echo "Version: apache ${SERVERV}" >> ${SERVERACCESS}
+    if [ -f ${REPOPATH}/ius.repo ]; then 
+        HTTPDNAME=$(yum list httpd*u | awk -F '.' '/httpd./{print $1}')
+        silent yum install ${HTTPDNAME} -y
+        silent systemctl start ${APACHENAME}
+        SERVERV=$(echo $(httpd -v | grep version) | awk '{print substr ($3,8,9)}')
+        /usr/bin/yum-config-manager --disable ius >/dev/null 2>&1
+        checkweb ${APACHENAME}
+        echoG "Version: apache ${SERVERV}"
+        echo "Version: apache ${SERVERV}" >> ${SERVERACCESS}
+    fi
 }
 ### Install LSWS
 install_lsws(){

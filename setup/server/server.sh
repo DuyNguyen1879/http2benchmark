@@ -21,6 +21,7 @@ REPOPATH=''
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 SERVER_LIST="apache lsws nginx"
 NGINX_MAINLINE='n'
+OPENLITESPEED_INSTALL='n'
 declare -A WEB_ARR=( [apache]=wp_apache [lsws]=wp_lsws [nginx]=wp_nginx )
 
 if [ ! -d ${DOCROOT} ]; then 
@@ -954,7 +955,9 @@ centos_main(){
     else
         centos_install_nginx
     fi
-    centos_install_ols
+    if [[ "$OPENLITESPEED_INSTALL" = [yY] ]]; then
+        centos_install_ols
+    fi
     centos_install_php
 }
 

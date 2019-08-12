@@ -5,7 +5,7 @@ Prior to running `server.sh`, in forked version you can choose to use pre-genera
 * DEFAULT_SSLCERTS='n' - when set to `y`, use default http2benchmark pre-generated RSA 2048bit self-signed SSL certificates. Copied to `/etc/ssl` directory.
 * SANS_SSLCERTS='n' - when set to `y`, use pre-generated RSA 2048bit self-signed SSL certificates with proper [V3 compatible subjectAltName field](http://wiki.cacert.org/FAQ/subjectAltName) added. Copied to `/etc/ssl` directory.
 * SANSECC_SSLCERTS='n' - when set to `y`, use pre-generated ECDSA 256bit self-signed SSL certificates with proper [V3 compatible subjectAltName field](http://wiki.cacert.org/FAQ/subjectAltName) added. Copied to `/etc/ssl` directory.
-*  SANS_SSLCERTS='y' + SANSECC_SSLCERTS='y' - if both variables are set to `y`, then use both sets of pre-generated RSA 2048bit & ECDSA 256bit self-signed SSL certificates. For RSA 2048bit,` http2benchmark.crt` & `http2benchmark.key` named and for ECDSA 256bit, `http2benchmark.ecc.crt` & `http2benchmark.ecc.key` named. Copied to `/etc/ssl` directory.
+*  SANS_SSLCERTS='y' + SANSECC_SSLCERTS='y' - if both variables are set to `y`, then use both sets of pre-generated RSA 2048bit & ECDSA 256bit self-signed SSL certificates. For RSA 2048bit,` http2benchmark.crt` & `http2benchmark.key` named and for ECDSA 256bit, `http2benchmark.crt.ecc` & `http2benchmark.ecc.key` named. Copied to `/etc/ssl` directory.
 
 There are 3 sets available and usually will be saved to `/etc/ssl` directory when you run `setup/server/server.sh` on server:
 
@@ -21,7 +21,7 @@ There are 3 sets available and usually will be saved to `/etc/ssl` directory whe
 
 3. ECDSA 256bit self-signed SSL certificate with 36500 days expiry which has proper [V3 compatible subjectAltName field](http://wiki.cacert.org/FAQ/subjectAltName) added to SSL certificate
 
-* http2benchmarksans.ecc.crt
+* http2benchmarksans.crt.ecc
 * http2benchmarksans.ecc.key
 
 Comparison of sizes
@@ -32,7 +32,7 @@ drwxr-xr-x 37 root root 4096 Aug 12 10:52 ..
 -rw-r--r--  1 root root 1330 Aug 12 11:20 http2benchmark.crt
 -rw-r--r--  1 root root 1704 Aug 12 11:20 http2benchmark.key
 -rw-r--r--  1 root root 1489 Aug 12 11:05 http2benchmarksans.crt
--rw-r--r--  1 root root  956 Aug 12 11:14 http2benchmarksans.ecc.crt
+-rw-r--r--  1 root root  956 Aug 12 11:14 http2benchmarksans.crt.ecc
 -rw-r--r--  1 root root  302 Aug 12 11:14 http2benchmarksans.ecc.key
 -rw-r--r--  1 root root 1704 Aug 12 11:05 http2benchmarksans.key
 ```
@@ -173,7 +173,7 @@ Certificate:
 3. ECDSA 256bit self-signed SSL certificate with 36500 days expiry which has proper [V3 compatible subjectAltName field](http://wiki.cacert.org/FAQ/subjectAltName) added to SSL certificate
 
 ```
-openssl x509 -noout -text < http2benchmarksans.ecc.crt
+openssl x509 -noout -text < http2benchmarksans.crt.ecc
 Certificate:
     Data:
         Version: 3 (0x2)

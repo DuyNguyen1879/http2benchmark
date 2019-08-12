@@ -22,6 +22,9 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 SERVER_LIST="apache lsws nginx"
 NGINX_MAINLINE='n'
 OPENLITESPEED_INSTALL='n'
+DEFAULT_SSLCERTS='n'
+SANS_SSLCERTS='n'
+SANSECC_SSLCERTS='n'
 declare -A WEB_ARR=( [apache]=wp_apache [lsws]=wp_lsws [nginx]=wp_nginx )
 
 if [ ! -d ${DOCROOT} ]; then 
@@ -811,12 +814,20 @@ EOC
 
 ### Setup Cert
 gen_selfsigned_cert(){
-    KEYNAME="${CERTDIR}/http2benchmark.key"
-    CERTNAME="${CERTDIR}/http2benchmark.crt"
+    # additional self-signed ssl certs available at
+    # https://github.com/centminmod/http2benchmark/tree/extended-tests/setup/server/ssl-certificates
+    FILENAME='http2benchmark'
+    KEYNAME="${CERTDIR}/${FILENAME}.key"
+    CERTNAME="${CERTDIR}/${FILENAME}.crt"
     # -nodes    = skip the option to secure our certificate with a passphrase.
     # req -x509 = The "X.509" is a public key infrastructure standard
     # -days 365 = The certificate will be considered valid for 1 Y
     # rsa:2048  = make an RSA key that is 2048 bits long
+    if [[ "$DEFAULT_SSLCERTS" = [yY] ]]; then
+        # rsa 2048bit pre-generated
+        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmark.crt" "${CERTNAME}"
+        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmark.key" "${KEYNAME}"
+    else
     silent openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${KEYNAME} -out ${CERTNAME} <<csrconf
 US
 NJ
@@ -828,6 +839,24 @@ webadmin
 .
 .
 csrconf
+    fi
+    if [[ "$SANS_SSLCERTS" = [yY] ]]; then
+        # rsa 2048bit v3 sans
+        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.crt" "${CERTNAME}"
+        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.key" "${KEYNAME}"
+    fi
+    if [[ "$SANSECC_SSLCERTS" = [yY] ]]; then
+        # ecc 256bit v3 sans
+        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.ecc.crt" "${CERTNAME}"
+        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.ecc.key" "${KEYNAME}"
+    fi
+    if [[ "$SANS_SSLCERTS" = [yY] && "$SANSECC_SSLCERTS" = [yY] ]]; then
+        # rsa 2048bit v3 sans + ecc 256bit v3 sans
+        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.crt" "${CERTNAME}"
+        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.key" "${KEYNAME}"
+        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.ecc.crt" "${CERTDIR}/${FILENAME}.ecc.crt"
+        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.ecc.key" "${CERTDIR}/${FILENAME}.ecc.key"
+    fi
 }
 
 check_spec(){

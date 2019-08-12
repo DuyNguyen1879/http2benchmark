@@ -56,7 +56,9 @@ firewall-cmd --zone=public --list-services
 ```
 
 # How to benchmark
+
 ## Server install
+
 ``` bash
 git clone -b extended-tests https://github.com/centminmod/http2benchmark.git
 ```
@@ -64,7 +66,15 @@ git clone -b extended-tests https://github.com/centminmod/http2benchmark.git
 http2benchmark/setup/server/server.sh | tee server.log
 ```
 
+Prior to runing `server.sh`, in forked version you can choose to use pre-generated self-signed SSL certificates via 3 variables in `server.sh` which are outlined below and [here](https://github.com/centminmod/http2benchmark/tree/extended-tests/setup/server/ssl-certificates) instead of having to generate the self-signed SSL certificates everytime. HTTP/2 HTTPS benchmarks and performance also depend on the type and size of SSL certificate served by the web server. So having a more common pre-generated self-signed SSL certificate will provide more comparable benchmark results.
+
+* DEFAULT_SSLCERTS='n' - when set to `y`, use default http2benchmark pre-generated RSA 2048bit self-signed SSL certificates. Copied to `/etc/ssl` directory.
+* SANS_SSLCERTS='n' - when set to `y`, use pre-generated RSA 2048bit self-signed SSL certificates with proper [V3 compatible subjectAltName field](http://wiki.cacert.org/FAQ/subjectAltName) added. Copied to `/etc/ssl` directory.
+* SANSECC_SSLCERTS='n' - when set to `y`, use pre-generated ECDSA 256bit self-signed SSL certificates with proper [V3 compatible subjectAltName field](http://wiki.cacert.org/FAQ/subjectAltName) added. Copied to `/etc/ssl` directory.
+*  SANS_SSLCERTS='y' + SANSECC_SSLCERTS='y' - if both variables are set to `y`, then use both sets of pre-generated RSA 2048bit & ECDSA 256bit self-signed SSL certificates. For RSA 2048bit,` http2benchmark.crt` & `http2benchmark.key` named and for ECDSA 256bit, `http2benchmark.ecc.crt` & `http2benchmark.ecc.key` named. Copied to `/etc/ssl` directory.
+
 ## Client install
+
 ``` bash
 git clone -b extended-tests https://github.com/centminmod/http2benchmark.git
 ```

@@ -936,7 +936,12 @@ setup_nginx(){
     backup_old ${NGDIR}/nginx.conf
     backup_old ${NGDIR}/conf.d/default.conf
     cp ../../webservers/nginx/conf/nginx.conf ${NGDIR}/
-    cp ../../webservers/nginx/conf/default.conf ${NGDIR}/conf.d/
+    
+    if [[ "$SANS_SSLCERTS" = [yY] && "$SANSECC_SSLCERTS" = [yY] ]]; then
+        \cp -f ../../webservers/nginx/conf/default.multicerts.conf ${NGDIR}/conf.d/default.conf
+    else
+        \cp -f ../../webservers/nginx/conf/default.conf ${NGDIR}/conf.d/
+    fi
     sed -i "s/user apache/user ${USER}/g"  ${NGDIR}/nginx.conf
 }
 

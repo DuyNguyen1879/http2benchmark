@@ -927,6 +927,13 @@ setup_lsws(){
         sed -i "s/www-data/${USER}/g" ${LSDIR}/conf/httpd_config.xml
         sed -i "s|/usr/local/lsws/lsphp72/bin/lsphp|/usr/bin/lsphp|g" ${LSDIR}/conf/httpd_config.xml
     fi    
+    if [[ "$SANS_SSLCERTS" = [yY] && "$SANSECC_SSLCERTS" = [yY] ]]; then
+        if [[ ! "$(grep 'sslEnableMultiCerts>1' ${LSDIR}/conf/httpd_config.xml)" ]]; then
+            sed -i "s|  <\/tuning>|    <sslEnableMultiCerts>1<\/sslEnableMultiCerts>\n  <\/tuning>|" ${LSDIR}/conf/httpd_config.xml
+        fi
+    else
+        sed '/sslEnableMultiCerts/d' ${LSDIR}/conf/httpd_config.xml
+    fi
 } 
 
 ### Config Nginx

@@ -18,7 +18,7 @@ JMFD='apache-jmeter'
 JMPLAN='jmeter.jmx'
 JMCFPATH="${CLIENTTOOL}/${JMFD}/bin/examples/${JMPLAN}"
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
-CONF_LIST="urls.conf h2load.conf h2load-low.conf h2load-m80.conf jmeter.jmx siege.conf wrk.conf wrkcmm.conf"
+CONF_LIST="urls.conf h2load.conf h2load-low.conf h2load-m80.conf h2load-rsa128.con h2load-low-rsa128.conf h2load-m80-rsa128.conf h2load-rsa256.conf h2load-low-rsa256.conf h2load-m80-rsa256.conf h2load-ecc128.conf h2load-low-ecc128.conf h2load-m80-ecc128.conf h2load-ecc256.conf h2load-low-ecc256.conf h2load-m80-ecc256.conf jmeter.jmx siege.conf wrk.conf wrkcmm.conf"
 SERVER_LIST="apache lsws nginx ols"
 
 silent() {

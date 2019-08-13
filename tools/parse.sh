@@ -103,29 +103,29 @@ function main() {
       parse_h2load ${ITERATION}
     elif [[ ${BENCHMARK_TOOL} == 'h2load-m80' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load_ecc128' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-ecc128' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load-low_ecc128' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-low-ecc128' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80_ecc128' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80-ecc128' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load_ecc256' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-ecc256' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load-low_ecc256' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-low-ecc256' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80_ecc256' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80-ecc256' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load_rsa128' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-rsa128' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load-low_rsa128' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-low-rsa128' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80_rsa128' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80-rsa128' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load_rsa256' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-rsa256' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load-low_rsa256' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-low-rsa256' ]]; then
       parse_h2load ${ITERATION}
-    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80_rsa256' ]]; then
+    elif [[ ${BENCHMARK_TOOL} == 'h2load-m80-rsa256' ]]; then
       parse_h2load ${ITERATION}
     elif [[ ${BENCHMARK_TOOL} == 'wrk' ]]; then
       parse_wrk ${ITERATION}

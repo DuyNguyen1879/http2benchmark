@@ -862,6 +862,8 @@ csrconf
         \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.key" "${KEYNAME}"
         \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.crt.ecc" "${CERTDIR}/${FILENAME}.crt.ecc"
         \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.key.ecc" "${CERTDIR}/${FILENAME}.key.ecc"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.crt" "${CERTDIR}/${FILENAME}.crt.rsa"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.key" "${CERTDIR}/${FILENAME}.key.rsa"
     fi
 }
 

@@ -848,14 +848,14 @@ csrconf
     if [[ "$SANSECC_SSLCERTS" = [yY] ]]; then
         # ecc 256bit v3 sans
         \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.crt.ecc" "${CERTNAME}"
-        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.ecc.key" "${KEYNAME}"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.key.ecc" "${KEYNAME}"
     fi
     if [[ "$SANS_SSLCERTS" = [yY] && "$SANSECC_SSLCERTS" = [yY] ]]; then
         # rsa 2048bit v3 sans + ecc 256bit v3 sans
         \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.crt" "${CERTNAME}"
         \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.key" "${KEYNAME}"
         \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.ecc.crt" "${CERTDIR}/${FILENAME}.crt.ecc"
-        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.ecc.key" "${CERTDIR}/${FILENAME}.key.ecc"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.key.ecc" "${CERTDIR}/${FILENAME}.key.ecc"
     fi
 }
 

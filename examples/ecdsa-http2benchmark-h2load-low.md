@@ -1,6 +1,6 @@
 * https://github.com/centminmod/http2benchmark/tree/extended-tests
 
-on both server and client
+# on both server and client
 
 ```
 yum -y install git
@@ -13,7 +13,7 @@ firewall-cmd --zone=public --list-ports
 firewall-cmd --zone=public --list-services
 ```
 
-on server
+# on server
 
 ```
 git clone -b extended-tests https://github.com/centminmod/http2benchmark.git
@@ -21,10 +21,27 @@ echo -e "SANS_SSLCERTS='y'\nSANSECC_SSLCERTS='y'" > /opt/server.ini
 http2benchmark/setup/server/server.sh | tee server.log
 ```
 
-on client
+`/opt/server.ini` will be populated with variables that override `http2benchmark/setup/server/server.sh`
+
+```
+SANS_SSLCERTS='y'
+SANSECC_SSLCERTS='y'
+```
+
+# on client
 
 ```
 git clone -b extended-tests https://github.com/centminmod/http2benchmark.git
 echo -e 'SERVER_LIST="lsws nginx"\nTOOL_LIST="h2load-low h2load-low-ecc128 h2load-low-ecc256"\nTARGET_LIST="1kstatic.html 1kgzip-static.html amdepyc2.jpg.webp wordpress coachblog coachbloggzip"\nROUNDNUM=5' > /opt/benchmark.ini
 http2benchmark/setup/client/client.sh | tee client.log
+/opt/benchmark.sh | tee benchmark.log
+```
+
+`/opt/benchmark.ini` will be populated with variables that override `/opt/benchmark.sh`
+
+```
+SERVER_LIST="lsws nginx"
+TOOL_LIST="h2load-low h2load-low-ecc128 h2load-low-ecc256"
+TARGET_LIST="1kstatic.html 1kgzip-static.html amdepyc2.jpg.webp wordpress coachblog coachbloggzip"
+ROUNDNUM=5
 ```

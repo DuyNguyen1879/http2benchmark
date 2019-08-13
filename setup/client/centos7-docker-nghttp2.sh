@@ -21,8 +21,8 @@ if [[ "$INSTALL_DOCKER" = [yY] ]]; then
   echo "docker install"
   echo "---------------------------------------------"
   silent yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-  yum -q -y install yum-utils device-mapper-persistent-data lvm2 jq
-  yum -q -y install docker-ce
+  silent yum -q -y install yum-utils device-mapper-persistent-data lvm2 jq
+  silent yum -q -y install docker-ce
   mkdir -p /etc/systemd/system/docker.service.d
   touch /etc/systemd/system/docker.service.d/docker.conf
   mkdir -p /etc/docker

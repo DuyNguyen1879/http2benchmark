@@ -73,6 +73,17 @@ Prior to running `server.sh`, in forked version you can choose to use pre-genera
 * SANSECC_SSLCERTS='n' - when set to `y`, use pre-generated ECDSA 256bit self-signed SSL certificates with proper [V3 compatible subjectAltName field](http://wiki.cacert.org/FAQ/subjectAltName) added. Copied to `/etc/ssl` directory.
 *  SANS_SSLCERTS='y' + SANSECC_SSLCERTS='y' - if both variables are set to `y`, then use both sets of pre-generated RSA 2048bit & ECDSA 256bit self-signed SSL certificates. For RSA 2048bit,` http2benchmark.crt` & `http2benchmark.key` named and for ECDSA 256bit, `http2benchmark.crt.ecc` & `http2benchmark.key.ecc` named. Copied to `/etc/ssl` directory. This configuration will enable Litespeed and Nginx's multiple/dual RSA + ECDSA SSL certificate support allowing web servers to conditionally serve more performant ECDSA 256bit SSL certificates if client (h2load) supports them. Otherwise, fall back to RSA 2048bit standard SSL certificate based SSL ciphers.
 
+#### server.ini override file
+
+Forked version added a `/opt/server.ini` override file, so you can edit `server.sh` settings without touching `server.sh`. 
+
+Example if you want to enable and configure Litespeed and Nginx to support multi-SSL (nginx refers to it as dual SSL mode) to support both RSA 2048bit + ECDSA 256bit SSL certificates, create `/opt/server.ini` on server side prior to running `http2benchmark/setup/server/server.sh` with the following settings:
+
+```
+SANS_SSLCERTS='y'
+SANSECC_SSLCERTS='y'
+```
+
 ## Client install
 
 ``` bash

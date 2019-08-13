@@ -15,7 +15,7 @@ silent() {
 }
 
 docker_install() {
-if [[ "$INSTALL_DOCKER" = [yY] ]]; then
+if [[ ! -f /usr/bin/docker && "$INSTALL_DOCKER" = [yY] ]]; then
   echo
   echo "---------------------------------------------"
   echo "docker install"
@@ -47,10 +47,12 @@ h2load_install() {
   echo "h2load docker image install"
   echo "setup h2loadnew cmd alias"
   echo "---------------------------------------------"
-  silent docker stop nghttp-min
-  silent docker rm nghttp-min
-  silent docker rmi centminmod/docker-ubuntu-nghttp2-minimal
-  silent docker run -t --net=host --name nghttp-min centminmod/docker-ubuntu-nghttp2-minimal
+  if [[ -f /usr/bin/docker && "$(docker ps --format "{{.Names}}" | grep 'nghttp-min')" = 'nghttp-min' ]]; then
+    silent docker stop nghttp-min
+    silent docker rm nghttp-min
+    silent docker rmi centminmod/docker-ubuntu-nghttp2-minimal
+  fi
+  docker run -tid --restart=always --net=host --name nghttp-min centminmod/docker-ubuntu-nghttp2-minimal
   # setup docker management cmd aliases
   if [[ ! "$(grep -w 'alias h2loadnew' /root/.bashrc)" ]]; then
     echo "alias h2loadnew='docker restart nghttp-min >/dev/null 2>&1; docker exec -ti nghttp-min h2load'" >> /root/.bashrc
@@ -62,6 +64,8 @@ h2load_install() {
     echo "alias rmnghttp-min='docker stop nghttp-min; docker rm nghttp-min; docker rmi centminmod/docker-ubuntu-nghttp2-minimal; docker run -ti --net=host --name nghttp-min centminmod/docker-ubuntu-nghttp2-minimal /bin/bash'" >> /root/.bashrc
   fi
   echo
+  docker start nghttp-min
+  sleep 3
   docker exec -ti nghttp-min h2load --version
   # echo "alias h2loadnew='docker exec -ti nghttp-min'"
   # echo "alias nghttpcmd-min='docker exec -ti nghttp-min'"

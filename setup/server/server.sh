@@ -959,7 +959,8 @@ setup_nginx(){
 
 ### Config OLS
 setup_ols(){
-    echoG 'Setting OpenLiteSpeed Config'
+  if [[ "$OPENLITESPEED_INSTALL" = [yY] ]]; then
+     echoG 'Setting OpenLiteSpeed Config'
     cd ${SCRIPTPATH}/
     backup_old ${OLSDIR}/conf/httpd_config.conf
     backup_old ${OLSDIR}/Example/conf/vhconf.conf
@@ -970,6 +971,7 @@ setup_ols(){
         sed -i "s|/usr/local/lsws/lsphp72/bin/lsphp|/usr/bin/lsphp|g" ${OLSDIR}/conf/httpd_config.conf
     fi
     change_owner ${OLSDIR}/cachedata
+  fi
 } 
 
 mvexscript(){

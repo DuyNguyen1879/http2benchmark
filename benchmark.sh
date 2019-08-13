@@ -932,6 +932,7 @@ archive_log(){
         silent tar -zcvf ${1}.tgz ${1}/
         if [ -e ${1}.tgz ]; then
             echoG "[OK] to archive ${1}.tgz"
+            echoG "${1}/RESULTS.txt"
         else
             echoR "[Failed] to archive ${1}.tgz"
         fi

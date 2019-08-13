@@ -825,8 +825,8 @@ gen_selfsigned_cert(){
     # rsa:2048  = make an RSA key that is 2048 bits long
     if [[ "$DEFAULT_SSLCERTS" = [yY] ]]; then
         # rsa 2048bit pre-generated
-        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmark.crt" "${CERTNAME}"
-        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmark.key" "${KEYNAME}"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmark.crt" "${CERTNAME}"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmark.key" "${KEYNAME}"
     else
     silent openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${KEYNAME} -out ${CERTNAME} <<csrconf
 US
@@ -842,20 +842,20 @@ csrconf
     fi
     if [[ "$SANS_SSLCERTS" = [yY] ]]; then
         # rsa 2048bit v3 sans
-        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.crt" "${CERTNAME}"
-        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.key" "${KEYNAME}"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.crt" "${CERTNAME}"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.key" "${KEYNAME}"
     fi
     if [[ "$SANSECC_SSLCERTS" = [yY] ]]; then
         # ecc 256bit v3 sans
-        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.crt.ecc" "${CERTNAME}"
-        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.ecc.key" "${KEYNAME}"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.crt.ecc" "${CERTNAME}"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.ecc.key" "${KEYNAME}"
     fi
     if [[ "$SANS_SSLCERTS" = [yY] && "$SANSECC_SSLCERTS" = [yY] ]]; then
         # rsa 2048bit v3 sans + ecc 256bit v3 sans
-        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.crt" "${CERTNAME}"
-        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.key" "${KEYNAME}"
-        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.ecc.crt" "${CERTDIR}/${FILENAME}.crt.ecc"
-        \cp -f "${SCRIPTPATH}}/ssl-certificates/http2benchmarksans.ecc.key" "${CERTDIR}/${FILENAME}.key.ecc"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.crt" "${CERTNAME}"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.key" "${KEYNAME}"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.ecc.crt" "${CERTDIR}/${FILENAME}.crt.ecc"
+        \cp -f "${SCRIPTPATH}/ssl-certificates/http2benchmarksans.ecc.key" "${CERTDIR}/${FILENAME}.key.ecc"
     fi
 }
 

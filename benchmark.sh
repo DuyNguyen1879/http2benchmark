@@ -61,6 +61,8 @@ KILL_PROCESS_LIST=''
 TARGET_DOMAIN=""
 HEADER='Accept-Encoding: gzip,deflate'
 SERVER_VERSION='N/A'
+H2BIN='h2load'
+H2LOAD_DOCKER='n'
 ROUNDNUM=3
 declare -A WEB_ARR=( [apache]=wp_apache/ [lsws]=wp_lsws/ [nginx]=wp_nginx/ [ols]=wp_lsws/ [apache-cb]=coachblog_apache/ [lsws-cb]=coachblog_lsws/ [nginx-cb]=coachblog_nginx/ [ols-cb]=coachblog_lsws/ [apache-cbg]=coachbloggzip_apache/ [lsws-cbg]=coachbloggzip_lsws/ [nginx-cbg]=coachbloggzip_nginx/ [ols-cbg]=coachbloggzip_lsws/)
 
@@ -71,6 +73,31 @@ CONCURRENT_STREAMS=$(grep '\-m' ${CLIENTCF}/h2load.conf  | awk '{print $NF}')
 if [ -f "${CMDFD}/benchmark.ini" ]; then
  source "${CMDFD}/benchmark.ini"
 fi
+
+h2loadnew_setup() {
+    silent docker restart nghttp-min
+    # alias h2loadnew='docker restart nghttp-min >/dev/null 2>&1; docker exec -ti nghttp-min h2load'
+    echo 'docker restart nghttp-min >/dev/null 2>&1; sleep 1; docker exec -ti nghttp-min h2load "$@"' > /usr/bin/h2loadnew
+    chmod +x /usr/bin/h2loadnew
+}
+
+docker_check() {
+    if [[ -f /etc/redhat-release && "$H2LOAD_DOCKER" = [yY] ]]; then
+        if [[ -f /usr/bin/docker && "$(docker ps --format "{{.Names}}" | grep 'nghttp-min')" = 'nghttp-min' ]]; then
+            if [[ "$(docker inspect nghttp-min | jq -r '.[] | .State.Status')" = 'running' ]]; then
+                h2loadnew_setup
+                H2BIN='h2loadnew'
+            fi
+        elif [[ -f /usr/bin/docker && "$(docker ps -a --format "{{.Names}}" | grep 'nghttp-min')" = 'nghttp-min' ]]; then
+            if [[ "$(docker inspect nghttp-min | jq -r '.[] | .State.Status')" != 'running' ]]; then
+                h2loadnew_setup
+                H2BIN='h2loadnew'
+            fi
+        else
+            H2BIN='h2load'
+        fi
+    fi
+}
 
 ### Tools
 echoY() {
@@ -232,6 +259,7 @@ get_server_version(){
 }
 
 validate_tool(){
+    docker_check
     echoG 'Checking benchmark Tools..'
     for TOOL in ${TOOL_LIST}; do
         if [ ${TOOL} = 'jmeter' ]; then
@@ -249,7 +277,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load'
                 RUNH2LOAD='true'
@@ -260,7 +288,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-low' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-low'
                 RUNH2LOAD_LOW='true'
@@ -271,7 +299,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-m80' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-m80'
                 RUNH2LOAD_M80='true'
@@ -282,7 +310,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-ecc128' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-ecc128'
                 RUNH2LOAD_ECC128='true'
@@ -293,7 +321,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-low-ecc128' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-low-ecc128'
                 RUNH2LOAD_LOW_ECC128='true'
@@ -304,7 +332,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-m80-ecc128' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-m80-ecc128'
                 RUNH2LOAD_M80_ECC128='true'
@@ -315,7 +343,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-ecc256' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-ecc256'
                 RUNH2LOAD_ECC256='true'
@@ -326,7 +354,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-low-ecc256' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-low-ecc256'
                 RUNH2LOAD_LOW_ECC256='true'
@@ -337,7 +365,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-m80-ecc256' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-m80-ecc256'
                 RUNH2LOAD_M80_ECC256='true'
@@ -348,7 +376,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-rsa128' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-rsa128'
                 RUNH2LOAD_RSA128='true'
@@ -359,7 +387,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-low-rsa128' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-low-rsa128'
                 RUNH2LOAD_LOW_RSA128='true'
@@ -370,7 +398,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-m80-rsa128' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-m80-rsa128'
                 RUNH2LOAD_M80_RSA128='true'
@@ -381,7 +409,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-rsa256' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-rsa256'
                 RUNH2LOAD_RSA256='true'
@@ -392,7 +420,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-low-rsa256' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-low-rsa256'
                 RUNH2LOAD_LOW_RSA256='true'
@@ -403,7 +431,7 @@ validate_tool(){
         fi
         if [ ${TOOL} = 'h2load-m80-rsa256' ]; then
             ### Check h2load
-            silent h2load --version
+            silent ${H2BIN} --version
             if [ ${?} = 0 ]; then
                 echoG '[OK] to run h2load-m80-rsa256'
                 RUNH2LOAD_M80_RSA256='true'
@@ -463,108 +491,108 @@ h2load_benchmark(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_low(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_LOW}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_m80(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_M80}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 
 h2load_benchmark_ecc128(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_ECC128}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_low_ecc128(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_LOW_ECC128}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_m80_ecc128(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_M80_ECC128}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_ecc256(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_ECC256}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_low_ecc256(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_LOW_ECC256}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_m80_ecc256(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_M80_ECC256}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 
 h2load_benchmark_rsa128(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_RSA128}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_low_rsa128(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_LOW_RSA128}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_m80_rsa128(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_M80_RSA128}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_rsa256(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_RSA256}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_low_rsa256(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_LOW_RSA256}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 h2load_benchmark_m80_rsa256(){
     MAPPINGLOG="${BENDATE}/${3}/${FILENAME}-${BENCHMARKLOG_H2_M80_RSA256}.${4}"
     echo "Target: https://${1}/${2}" >> ${MAPPINGLOG}
     target_check ${TESTSERVERIP} ${TARGET} ${MAPPINGLOG} >> ${MAPPINGLOG}
-    echo "Benchmark Command: h2load ${FILE_CONTENT} ${HEADER} https://${1}/${2}" >> ${MAPPINGLOG}
-    h2load ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
+    echo "Benchmark Command: ${H2BIN} ${FILE_CONTENT} '${HEADER}' https://${1}/${2}" >> ${MAPPINGLOG}
+    ${H2BIN} ${FILE_CONTENT} "${HEADER}" "https://${1}/${2}" >> ${MAPPINGLOG}
 }
 
 jmeter_benchmark(){

@@ -412,6 +412,7 @@ install_lsws(){
     if [ -e ${CMDFD}/lsws* ] || [ -d /usr/local/entlsws ]; then
         echoY 'Remove old LSWS'
         silent systemctl stop lsws
+        silent kill -9 $(pidof litespeed)
         rm -rf ${CMDFD}/lsws*
         rm -rf ${LSDIR}
     fi

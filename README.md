@@ -102,10 +102,49 @@ Run the following command in client server:
 /opt/benchmark.sh | tee benchmark.log
 ```
 
-You can optionally test against wrk forked version [`wrk-cmm`](https://github.com/centminmod/wrk/tree/centminmod) by editing `/opt/benchmark.sh` adding it to `TOOL_LIST` (note minus the hyphen is correct):
+You can optionally test against wrk forked version [`wrk-cmm`](https://github.com/centminmod/wrk/tree/centminmod) by editing `/opt/benchmark.sh` adding it to `TOOL_LIST` (note minus the hyphen is correct).
 
 ```
 TOOL_LIST="h2load wrk wrkcmm"
+```
+
+### benchmark.sh additional h2load HTTP/2 test profiles
+
+In forked version, added additional h2load test profiles for specific SSL cipher tests depending on how you configured and ran `setup/server/server.sh`.
+
+* `h2load-ecc128` - run h2load with ECDHE-ECDSA-AES128-GCM-SHA256 SSL cipher tested. Can only be used if `setup/server/server.sh` was ran with `SANSECC_SSLCERTS='y'` enabled or when both `SANS_SSLCERTS='y'` and `SANSECC_SSLCERTS='y'` are enabled for dual RSA + ECDSA SSL certificate support for Litespeed and Nginx (not setup for Apache right now).
+* `h2load-ecc256` - run h2load with ECDHE-ECDSA-AES256-GCM-SHA384 SSL cipher tested. Can only be used if `setup/server/server.sh` was ran with `SANSECC_SSLCERTS='y'` enabled or when both `SANS_SSLCERTS='y'` and `SANSECC_SSLCERTS='y'` are enabled for dual RSA + ECDSA SSL certificate support for Litespeed and Nginx (not setup for Apache right now).
+* `h2load-rsa128` - run h2load with ECDHE-RSA-AES128-GCM-SHA256 SSL cipher tested
+* `h2load-rsa256` - run h2load with ECDHE-RSA-AES256-GCM-SHA384 SSL cipher tested
+* `h2load-low-ecc128` - run h2load with ECDHE-ECDSA-AES128-GCM-SHA256 SSL cipher tested. Can only be used if `setup/server/server.sh` was ran with `SANSECC_SSLCERTS='y'` enabled or when both `SANS_SSLCERTS='y'` and `SANSECC_SSLCERTS='y'` are enabled for dual RSA + ECDSA SSL certificate support for Litespeed and Nginx (not setup for Apache right now).
+* `h2load-low-ecc256` - run h2load with ECDHE-ECDSA-AES256-GCM-SHA384 SSL cipher tested. Can only be used if `setup/server/server.sh` was ran with `SANSECC_SSLCERTS='y'` enabled or when both `SANS_SSLCERTS='y'` and `SANSECC_SSLCERTS='y'` are enabled for dual RSA + ECDSA SSL certificate support for Litespeed and Nginx (not setup for Apache right now).
+* `h2load-low-rsa128` - run h2load with ECDHE-RSA-AES128-GCM-SHA256 SSL cipher tested
+* `h2load-low-rsa256` - run h2load with ECDHE-RSA-AES256-GCM-SHA384 SSL cipher tested
+* `h2load-m80-ecc128` - run h2load with ECDHE-ECDSA-AES128-GCM-SHA256 SSL cipher tested. Can only be used if `setup/server/server.sh` was ran with `SANSECC_SSLCERTS='y'` enabled or when both `SANS_SSLCERTS='y'` and `SANSECC_SSLCERTS='y'` are enabled for dual RSA + ECDSA SSL certificate support for Litespeed and Nginx (not setup for Apache right now).
+* `h2load-m80-ecc256` - run h2load with ECDHE-ECDSA-AES256-GCM-SHA384 SSL cipher tested. Can only be used if `setup/server/server.sh` was ran with `SANSECC_SSLCERTS='y'` enabled or when both `SANS_SSLCERTS='y'` and `SANSECC_SSLCERTS='y'` are enabled for dual RSA + ECDSA SSL certificate support for Litespeed and Nginx (not setup for Apache right now).
+* `h2load-m80-rsa128` - run h2load with ECDHE-RSA-AES128-GCM-SHA256 SSL cipher tested
+* `h2load-m80-rsa256` - run h2load with ECDHE-RSA-AES256-GCM-SHA384 SSL cipher tested
+
+### benchmark.ini settings file
+In forked version, you can also use the new override `/opt/benchmark.ini` settings file you manually create to override the variables in `/opt/benchmark.sh`. This will leave `/opt/benchmark.sh` untouched. Place your custom test paramaters into `/opt/benchmark.ini` settings file instead prior to running `/opt/benchmark.sh`:
+
+```
+SERVER_LIST="lsws nginx"
+TOOL_LIST="h2load h2load-low h2load-m80 wrk"
+TARGET_LIST="1kstatic.html 1kgzip-static.html amdepyc2.jpg.webp amdepyc2.jpg wordpress coachblog coachbloggzip"
+
+# specific SSL cipher tests for h2load
+# https://github.com/centminmod/http2benchmark/tree/extended-tests/setup/server/ssl-certificates
+# 
+# when setup/server/server.sh was ran with either, DEFAULT_SSLCERTS='n' or DEFAULT_SSLCERTS='y'
+# or SANS_SSLCERTS='y' enabled
+#TOOL_LIST="h2load h2load-low h2load-m80 h2load-rsa128 h2load-low-rsa128 h2load-m80-rsa128 wrk"
+#TOOL_LIST="h2load h2load-low h2load-m80 h2load-rsa256 h2load-low-rsa256 h2load-m80-rsa256 wrk"
+
+# when setup/server/server.sh was ran with SANSECC_SSLCERTS='y' enabled
+# or when both `SANS_SSLCERTS='y'` and `SANSECC_SSLCERTS='y'` are enabled
+#TOOL_LIST="h2load h2load-low h2load-m80 h2load-ecc128 h2load-low-ecc128 h2load-m80-ecc128 wrk"
+#TOOL_LIST="h2load h2load-low h2load-m80 h2load-ecc256 h2load-low-ecc256 h2load-m80-ecc256 wrk"
 ```
 
 ## Log 

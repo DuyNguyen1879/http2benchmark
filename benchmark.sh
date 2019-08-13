@@ -8,6 +8,9 @@ SERVER_LIST="lsws nginx"
 #SERVER_LIST="apache lsws nginx ols"
 TOOL_LIST="h2load wrk"
 #TOOL_LIST="h2load h2load-low h2load-m80 wrk"
+#TOOL_LIST="h2load h2load-low h2load-m80 h2load-rsa128 h2load-low-rsa128 h2load-m80-rsa128 wrk"
+#TOOL_LIST="h2load h2load-low h2load-m80 h2load-rsa256 h2load-low-rsa256 h2load-m80-rsa256 wrk"
+#TOOL_LIST="h2load h2load-low h2load-m80 h2load-ecc128 h2load-low-ecc128 h2load-m80-ecc128 wrk"
 #TOOL_LIST="h2load h2load-low h2load-m80 h2load-ecc256 h2load-low-ecc256 h2load-m80-ecc256 wrk"
 #TOOL_LIST="h2load jmeter"
 TARGET_LIST="1kstatic.html 1kgzip-static.html 1knogzip.jpg amdepyc2.jpg.webp amdepyc2.jpg wordpress coachblog coachbloggzip"
@@ -63,6 +66,11 @@ declare -A WEB_ARR=( [apache]=wp_apache/ [lsws]=wp_lsws/ [nginx]=wp_nginx/ [ols]
 
 ###### H2Load
 CONCURRENT_STREAMS=$(grep '\-m' ${CLIENTCF}/h2load.conf  | awk '{print $NF}')
+
+###### benchmark.ini settings file override
+if [ -f "${CMDFD}/benchmark.ini" ]; then
+ source "${CMDFD}/benchmark.ini"
+fi
 
 ### Tools
 echoY() {

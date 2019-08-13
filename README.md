@@ -27,7 +27,7 @@ Example benchmark results posted [here](https://gist.github.com/centminmod/69806
 
 # Test Targets
 
-The following test targets are benchmarked by default
+The following test targets are benchmarked by default. You can override these using the the new [`/opt/benchmark.ini`](#benchmarkini-settings-file) settings file ovrride method.
 
 * `1kstatic.html` - 1kb static html file
 * `1kgzip-static.html` - 1kb static html file that has been gzip pre-compressed (leverage nginx [gzip_static](https://nginx.org/en/docs/http/ngx_http_gzip_static_module.html#gzip_static) directive)
@@ -102,7 +102,7 @@ Run the following command in client server:
 /opt/benchmark.sh | tee benchmark.log
 ```
 
-You can optionally test against wrk forked version [`wrk-cmm`](https://github.com/centminmod/wrk/tree/centminmod) by editing `/opt/benchmark.sh` adding it to `TOOL_LIST` (note minus the hyphen is correct).
+You can optionally test against wrk forked version [`wrk-cmm`](https://github.com/centminmod/wrk/tree/centminmod) by editing `/opt/benchmark.sh` adding it to `TOOL_LIST` (note minus the hyphen is correct) or utlising the new [`/opt/benchmark.ini`](#benchmarkini-settings-file) settings file ovrride method.
 
 ```
 TOOL_LIST="h2load wrk wrkcmm"

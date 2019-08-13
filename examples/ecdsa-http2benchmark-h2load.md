@@ -52,7 +52,7 @@ http2benchmark/setup/client/client.sh | tee client.log
 
 ```
 SERVER_LIST="lsws nginx"
-TOOL_LIST="h2load-low h2load-low-ecc128 h2load-low-ecc256"
+TOOL_LIST="h2load h2load-ecc128 h2load-ecc256"
 TARGET_LIST="1kstatic.html 1kgzip-static.html amdepyc2.jpg.webp wordpress coachblog coachbloggzip"
 ROUNDNUM=5
 ```

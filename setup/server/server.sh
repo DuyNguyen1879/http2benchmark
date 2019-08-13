@@ -27,6 +27,11 @@ SANS_SSLCERTS='n'
 SANSECC_SSLCERTS='n'
 declare -A WEB_ARR=( [apache]=wp_apache [lsws]=wp_lsws [nginx]=wp_nginx )
 
+###### server.ini settings file override
+if [ -f "${CMDFD}/server.ini" ]; then
+ source "${CMDFD}/server.ini"
+fi
+
 if [ ! -d ${DOCROOT} ]; then 
     mkdir -p ${DOCROOT}
 fi

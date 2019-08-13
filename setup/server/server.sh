@@ -388,7 +388,7 @@ centos_install_apache(){
         echoY "Remove existing old ${APACHENAME}" 
         rm_old_pkg ${APACHENAME}  
     fi    
-    curl -s 'https://setup.ius.io/' -o ${CMDFD}/setup-ius.sh 
+    curl -ks 'https://setup.ius.io/' -o ${CMDFD}/setup-ius.sh 
     chmod 0755 ${CMDFD}/setup-ius.sh 
     silent bash ${CMDFD}/setup-ius.sh 
     rm -f ${CMDFD}/setup-ius.sh 
@@ -887,7 +887,7 @@ cpuprocess(){
         sed -i 's/worker_processes  1;/worker_processes  2;/g' ${NGDIR}/nginx.conf
         ### OLS
         if [ -f "${OLSDIR}/conf/httpd_config.xml" ]; then
-            sed -i 's/<binding>1<\/binding>/<binding>2<\/binding>/g' ${OLSDIR}/conf/httpd_config.xml
+            sed -i 's/<binding>1<\/binding>/<binding>2<\/binding>/g' ${OLSDIR}/conf/httpd_config.conf
         fi
         
     fi

@@ -79,14 +79,14 @@ fi
 h2loadnew_setup() {
     silent docker restart nghttp-min
     # alias h2loadnew='docker restart nghttp-min >/dev/null 2>&1; docker exec -ti nghttp-min h2load'
-    echo 'docker restart nghttp-min >/dev/null 2>&1; sleep 1; docker exec -ti nghttp-min h2load "$@"' > /usr/bin/h2loadnew
+    echo "if [[ \"$(docker inspect nghttp-min | jq -r '.[] | .State.Status')\" != 'running' ]]; then docker restart nghttp-min >/dev/null 2>&1; sleep 1; fi; docker exec -ti nghttp-min h2load \"\$@\"" > /usr/bin/h2loadnew
     chmod +x /usr/bin/h2loadnew
 }
 
 h2loadnewer_setup() {
     silent docker restart nghttp
     # alias h2loadnewer='docker restart nghttp >/dev/null 2>&1; docker exec -ti nghttp h2load'
-    echo 'docker restart nghttp >/dev/null 2>&1; sleep 1; docker exec -ti nghttp h2load "$@"' > /usr/bin/h2loadnewer
+    echo "if [[ \"$(docker inspect nghttp | jq -r '.[] | .State.Status')\" != 'running' ]]; then docker restart nghttp >/dev/null 2>&1; sleep 1; fi; docker exec -ti nghttp h2load \"\$@\"" > /usr/bin/h2loadnewer
     chmod +x /usr/bin/h2loadnewer
 }
 

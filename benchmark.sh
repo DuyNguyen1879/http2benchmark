@@ -64,6 +64,7 @@ HEADER='Accept-Encoding: gzip,deflate'
 SERVER_VERSION='N/A'
 H2BIN='h2load'
 H2LOAD_DOCKER='n'
+H2LOADNEWER_DOCKER='n'
 ROUNDNUM=3
 declare -A WEB_ARR=( [apache]=wp_apache/ [lsws]=wp_lsws/ [nginx]=wp_nginx/ [ols]=wp_lsws/ [apache-cb]=coachblog_apache/ [lsws-cb]=coachblog_lsws/ [nginx-cb]=coachblog_nginx/ [ols-cb]=coachblog_lsws/ [apache-cbg]=coachbloggzip_apache/ [lsws-cbg]=coachbloggzip_lsws/ [nginx-cbg]=coachbloggzip_nginx/ [ols-cbg]=coachbloggzip_lsws/)
 
@@ -82,6 +83,13 @@ h2loadnew_setup() {
     chmod +x /usr/bin/h2loadnew
 }
 
+h2loadnewer_setup() {
+    silent docker restart nghttp
+    # alias h2loadnewer='docker restart nghttp >/dev/null 2>&1; docker exec -ti nghttp h2load'
+    echo 'docker restart nghttp >/dev/null 2>&1; sleep 1; docker exec -ti nghttp h2load "$@"' > /usr/bin/h2loadnewer
+    chmod +x /usr/bin/h2loadnewer
+}
+
 docker_check() {
     if [[ -f /etc/redhat-release && "$H2LOAD_DOCKER" = [yY] ]]; then
         if [[ -f /usr/bin/docker && "$(docker ps --format "{{.Names}}" | grep 'nghttp-min')" = 'nghttp-min' ]]; then
@@ -93,6 +101,21 @@ docker_check() {
             if [[ "$(docker inspect nghttp-min | jq -r '.[] | .State.Status')" != 'running' ]]; then
                 h2loadnew_setup
                 H2BIN='h2loadnew'
+            fi
+        else
+            H2BIN='h2load'
+        fi
+    fi
+    if [[ -f /etc/redhat-release && "$H2LOADNEWER_DOCKER" = [yY] ]]; then
+        if [[ -f /usr/bin/docker && "$(docker ps --format "{{.Names}}" | grep -w 'nghttp$')" = 'nghttp' ]]; then
+            if [[ "$(docker inspect nghttp | jq -r '.[] | .State.Status')" = 'running' ]]; then
+                h2loadnewer_setup
+                H2BIN='h2loadnewer'
+            fi
+        elif [[ -f /usr/bin/docker && "$(docker ps -a --format "{{.Names}}" | grep -w 'nghttp$')" = 'nghttp' ]]; then
+            if [[ "$(docker inspect nghttp | jq -r '.[] | .State.Status')" != 'running' ]]; then
+                h2loadnewer_setup
+                H2BIN='h2loadnewer'
             fi
         else
             H2BIN='h2load'

@@ -968,7 +968,15 @@ setup_apache(){
             sed -i '/LoadModule mpm_event_module/s/^#//g' /etc/httpd/conf.modules.d/00-mpm.conf
             sed -i 's+SetHandler application/x-httpd-php+SetHandler proxy:unix:/var/run/php/php7.2-fpm.sock|fcgi://localhost+g' /etc/httpd/conf.d/php.conf
             cp ../../webservers/apache/conf/deflate.conf ${APADIR}/conf.d
-            cp ../../webservers/apache/conf/default-ssl.conf ${APADIR}/conf.d
+            if [[ "$SANS_SSLCERTS" = [yY] && "$SANSECC_SSLCERTS" = [yY] ]]; then
+                \cp -f ../../webservers/apache/conf/default-ssl-rsa-ecc.conf ${APADIR}/conf.d/default-ssl.conf
+            elif [[ "$SANS_SSLCERTS" = [nN] && "$SANSECC_SSLCERTS" = [yY] ]]; then
+                \cp -f ../../webservers/apache/conf/default-ssl-ecc.conf ${APADIR}/conf.d/default-ssl.conf
+            elif [[ "$SANS_SSLCERTS" = [yY] && "$SANSECC_SSLCERTS" = [nN] ]]; then
+                \cp -f ../../webservers/apache/conf/default-ssl-rsa.conf ${APADIR}/conf.d/default-ssl.conf
+            else
+                \cp -f ../../webservers/apache/conf/default-ssl.conf ${APADIR}/conf.d/default-ssl.conf
+            fi
             sed -i '/ErrorLog/s/^/#/g' /etc/httpd/conf.d/default-ssl.conf
             service httpd restart
         else

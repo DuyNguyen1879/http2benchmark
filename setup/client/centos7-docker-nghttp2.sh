@@ -57,6 +57,8 @@ h2load_install() {
   # if [[ ! "$(grep -w 'alias h2loadnew' /root/.bashrc)" ]]; then
   #   echo "alias h2loadnew='docker restart nghttp-min >/dev/null 2>&1; docker exec -ti nghttp-min h2load'" >> /root/.bashrc
   # fi
+  echo 'docker restart nghttp-min >/dev/null 2>&1; sleep 1; docker exec -ti nghttp-min nghttp "$@"' > /usr/bin/nghttpnew
+  chmod +x /usr/bin/nghttpnew
   echo 'docker restart nghttp-min >/dev/null 2>&1; sleep 1; docker exec -ti nghttp-min h2load "$@"' > /usr/bin/h2loadnew
   chmod +x /usr/bin/h2loadnew
   if [[ ! "$(grep -w 'alias nghttp-min' /root/.bashrc)" ]]; then
@@ -67,6 +69,8 @@ h2load_install() {
   fi
   echo
   docker start nghttp-min
+  silent docker exec -ti nghttp-min apt update
+  silentdocker exec -ti nghttp-min apt -y upgrade
   sleep 3
   docker exec -ti nghttp-min h2load --version
   # echo "alias h2loadnew='docker exec -ti nghttp-min'"

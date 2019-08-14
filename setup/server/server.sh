@@ -21,6 +21,7 @@ REPOPATH=''
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 SERVER_LIST="apache lsws nginx"
 NGINX_MAINLINE='n'
+APACHE_INSTALL='n'
 OPENLITESPEED_INSTALL='n'
 DEFAULT_SSLCERTS='n'
 SANS_SSLCERTS='n'
@@ -958,34 +959,36 @@ change_owner(){
 
 ### Config Apache
 setup_apache(){
-    if [ ${OSNAME} = 'centos' ]; then
-        echoG 'Setting Apache Config'
-        cd ${SCRIPTPATH}/
-        echo "Protocols h2 http/1.1" >> /etc/httpd/conf/httpd.conf
-        sed -i '/LoadModule mpm_prefork_module/s/^/#/g' /etc/httpd/conf.modules.d/00-mpm.conf
-        sed -i '/LoadModule mpm_event_module/s/^#//g' /etc/httpd/conf.modules.d/00-mpm.conf
-        sed -i 's+SetHandler application/x-httpd-php+SetHandler proxy:unix:/var/run/php/php7.2-fpm.sock|fcgi://localhost+g' /etc/httpd/conf.d/php.conf
-        cp ../../webservers/apache/conf/deflate.conf ${APADIR}/conf.d
-        cp ../../webservers/apache/conf/default-ssl.conf ${APADIR}/conf.d
-        sed -i '/ErrorLog/s/^/#/g' /etc/httpd/conf.d/default-ssl.conf
-        service httpd restart
-     else
-        echoG 'Setting Apache Config'
-        cd ${SCRIPTPATH}/
-        a2enmod proxy_fcgi >/dev/null 2>&1
-        a2enconf php7.2-fpm >/dev/null 2>&1
-        a2enmod mpm_event >/dev/null 2>&1
-        a2enmod ssl >/dev/null 2>&1
-        a2enmod http2 >/dev/null 2>&1
-        cp ../../webservers/apache/conf/deflate.conf ${APADIR}/mods-available
-        cp ../../webservers/apache/conf/default-ssl.conf ${APADIR}/sites-available
-        if [ ! -e ${APADIR}/sites-enabled/000-default-ssl.conf ]; then
-            ln -s ${APADIR}/sites-available/default-ssl.conf ${APADIR}/sites-enabled/000-default-ssl.conf
+    if [[ "$APACHE_INSTALL" = [yY] ]]; then
+        if [ ${OSNAME} = 'centos' ]; then
+            echoG 'Setting Apache Config'
+            cd ${SCRIPTPATH}/
+            echo "Protocols h2 http/1.1" >> /etc/httpd/conf/httpd.conf
+            sed -i '/LoadModule mpm_prefork_module/s/^/#/g' /etc/httpd/conf.modules.d/00-mpm.conf
+            sed -i '/LoadModule mpm_event_module/s/^#//g' /etc/httpd/conf.modules.d/00-mpm.conf
+            sed -i 's+SetHandler application/x-httpd-php+SetHandler proxy:unix:/var/run/php/php7.2-fpm.sock|fcgi://localhost+g' /etc/httpd/conf.d/php.conf
+            cp ../../webservers/apache/conf/deflate.conf ${APADIR}/conf.d
+            cp ../../webservers/apache/conf/default-ssl.conf ${APADIR}/conf.d
+            sed -i '/ErrorLog/s/^/#/g' /etc/httpd/conf.d/default-ssl.conf
+            service httpd restart
+        else
+            echoG 'Setting Apache Config'
+            cd ${SCRIPTPATH}/
+            a2enmod proxy_fcgi >/dev/null 2>&1
+            a2enconf php7.2-fpm >/dev/null 2>&1
+            a2enmod mpm_event >/dev/null 2>&1
+            a2enmod ssl >/dev/null 2>&1
+            a2enmod http2 >/dev/null 2>&1
+            cp ../../webservers/apache/conf/deflate.conf ${APADIR}/mods-available
+            cp ../../webservers/apache/conf/default-ssl.conf ${APADIR}/sites-available
+            if [ ! -e ${APADIR}/sites-enabled/000-default-ssl.conf ]; then
+                ln -s ${APADIR}/sites-available/default-ssl.conf ${APADIR}/sites-enabled/000-default-ssl.conf
+            fi
+            if [ ! -e ${APADIR}/conf-enabled/php7.2-fpm.conf ]; then 
+                ln -s ${APADIR}/conf-available/php7.2-fpm.conf ${APADIR}/conf-enabled/php7.2-fpm.conf 
+            fi
         fi
-        if [ ! -e ${APADIR}/conf-enabled/php7.2-fpm.conf ]; then 
-            ln -s ${APADIR}/conf-available/php7.2-fpm.conf ${APADIR}/conf-enabled/php7.2-fpm.conf 
-        fi
-    fi    
+    fi
 }
 ### Config LSWS
 setup_lsws(){
@@ -1051,7 +1054,9 @@ mvexscript(){
 ubuntu_main(){
     ubuntu_sysupdate
     ubuntu_install_pkg
-    ubuntu_install_apache
+    if [[ "$APACHE_INSTALL" = [yY] ]]; then
+        ubuntu_install_apache
+    fi
     ubuntu_install_lsws
     if [[ "$NGINX_MAINLINE" = [yY] ]]; then
         ubuntu_install_nginx_ml
@@ -1065,7 +1070,9 @@ ubuntu_main(){
 centos_main(){
     centos_sysupdate
     centos_install_pkg
-    centos_install_apache
+    if [[ "$APACHE_INSTALL" = [yY] ]]; then
+        centos_install_apache
+    fi
     centos_install_lsws
     if [[ "$NGINX_MAINLINE" = [yY] ]]; then
         centos_install_nginx_ml
@@ -1077,7 +1084,7 @@ centos_main(){
     fi
     centos_install_php
 }
-
+    
 main(){
     gen_pwd
     clean_log_fd

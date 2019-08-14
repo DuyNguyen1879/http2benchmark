@@ -724,6 +724,12 @@ before_test(){
 }
 
 main_test(){
+    sslcert_testmode=$1
+    if [[ "$sslcert_testmode" = 'ecdsa' ]]; then
+        TOOL_LIST="h2load-ecc128 h2load-low-ecc128 h2load-m80-ecc128 h2load-ecc256 h2load-low-ecc256 h2load-m80-ecc256"
+    elif [[ "$sslcert_testmode" = 'rsa' ]]; then
+        TOOL_LIST="h2load-rsa128 h2load-low-rsa128 h2load-m80-rsa128 h2load-rsa256 h2load-low-rsa256 h2load-m80-rsa256"
+    fi
     START_TIME="$(date -u +%s)"
     before_test
     for SERVER in ${SERVER_LIST}; do
@@ -1038,11 +1044,12 @@ archive_log(){
 }
 
 main(){
+    sslcert_mode=$1
     create_log_fd
     update_web_version
     gather_serverlog env
     help_message 3
-    main_test
+    main_test $sslcert_mode
     parse_log
     if [ ${CHECK} = 'ON' ]; then
         gather_serverlog log
@@ -1065,6 +1072,12 @@ while [ ! -z "${1}" ]; do
             ;;
         --no-check)
             CHECK='OFF'
+            ;;
+        ecdsa)
+            main ecdsa
+            ;;
+        rsa)
+            main ecdsa
             ;;
         *) echo
             'Not support'

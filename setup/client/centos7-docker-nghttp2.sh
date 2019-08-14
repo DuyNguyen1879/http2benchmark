@@ -70,7 +70,7 @@ h2load_install() {
   echo
   docker start nghttp-min
   silent docker exec -ti nghttp-min apt update
-  silentdocker exec -ti nghttp-min apt -y upgrade
+  silent docker exec -ti nghttp-min apt -y upgrade
   sleep 3
   docker exec -ti nghttp-min h2load --version
   # echo "alias h2loadnew='docker exec -ti nghttp-min'"

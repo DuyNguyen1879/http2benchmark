@@ -5,13 +5,20 @@
 CMDFD='/opt'
 ENVFD="${CMDFD}/env"
 SERVERACCESS="${ENVFD}/serveraccess.txt"
+ENVLOG="${ENVFD}/server/environment.log"
 CPU_CHECK_INTERVAL='0.2'
+
+echoY() {
+    echo -e "\033[38;5;148m${1}\033[39m"
+}
 
 update_web_version(){
     if [ "${1}" = 'apache' ]; then
-        SERVERV="$(echo $(apache2 -v | grep version) | awk '{print substr ($3,8,9)}')"
-    elif [ "${1}" = 'httpd' ]; then   
-        SERVERV="$(echo $(httpd -v | grep version) | awk '{print substr ($3,8,9)}')"
+        if [ -f /etc/redhat-release ] ; then            
+            SERVERV="$(echo $(httpd -v | grep version) | awk '{print substr ($3,8,9)}')"
+        else   
+            SERVERV="$(echo $(apache2 -v | grep version) | awk '{print substr ($3,8,9)}')"
+        fi
     elif [ "${1}" = 'lsws' ]; then 
         SERVERV="$(cat /usr/local/entlsws/VERSION)"
     elif [ "${1}" = 'ols' ]; then 
@@ -75,6 +82,20 @@ kill_process_cpu(){
     kill -TERM ${TOP_PID}
 }
 
+check_server_spec(){
+    if [ -s ${ENVLOG} ]; then
+        rm -f ${ENVLOG}; touch ${ENVLOG}
+    fi
+    ### Total Memory
+    echo -n 'Test   Server - Memory Size: '                             | tee -a ${ENVLOG}
+    echoY $(awk '$1 == "MemTotal:" {print $2/1024 "MB"}' /proc/meminfo) | tee -a ${ENVLOG}
+    ### Total CPU
+    echo -n 'Test   Server - CPU number: '                              | tee -a ${ENVLOG}
+    echoY $(lscpu | grep '^CPU(s):' | awk '{print $NF}')                | tee -a ${ENVLOG}
+    echo -n 'Test   Server - CPU Thread: '                              | tee -a ${ENVLOG}
+    echoY $(lscpu | grep '^Thread(s) per core' | awk '{print $NF}')     | tee -a ${ENVLOG}
+}
+
 check_process_cpu(){
     local PROCESS_NAME=''
     case ${1} in 
@@ -92,5 +113,6 @@ case ${1} in
     process_cpu) check_process_cpu ${2} ${3};; 
     kill_process_cpu) kill_process_cpu;;
     update_web_version) update_web_version ${2} ${SERVERACCESS};;
+    check_server_spec) check_server_spec;;
     *) echo 'Not support' ;;
 esac

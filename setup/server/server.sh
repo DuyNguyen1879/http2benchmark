@@ -946,7 +946,7 @@ cpuprocess(){
         sed -i 's/worker_processes  1;/worker_processes  2;/g' ${NGDIR}/nginx.conf
         ### OLS
         if [ -f "${OLSDIR}/conf/httpd_config.conf" ]; then
-            sed -i 's/binding                 1/binding                 3/g' ${OLSDIR}/conf/httpd_config.conf
+        	sed -i 's/binding                 1/binding                 3/g' "${OLSDIR}/conf/httpd_config.conf"          
         fi
         
     fi
@@ -959,8 +959,17 @@ change_owner(){
 ### Config Apache
 setup_apache(){
     if [ ${OSNAME} = 'centos' ]; then
-        echo "Apache config not support on CentOS yet!"
-    else    
+        echoG 'Setting Apache Config'
+        cd ${SCRIPTPATH}/
+        echo "Protocols h2 http/1.1" >> /etc/httpd/conf/httpd.conf
+        sed -i '/LoadModule mpm_prefork_module/s/^/#/g' /etc/httpd/conf.modules.d/00-mpm.conf
+        sed -i '/LoadModule mpm_event_module/s/^#//g' /etc/httpd/conf.modules.d/00-mpm.conf
+        sed -i 's+SetHandler application/x-httpd-php+SetHandler proxy:unix:/var/run/php/php7.2-fpm.sock|fcgi://localhost+g' /etc/httpd/conf.d/php.conf
+        cp ../../webservers/apache/conf/deflate.conf ${APADIR}/conf.d
+        cp ../../webservers/apache/conf/default-ssl.conf ${APADIR}/conf.d
+        sed -i '/ErrorLog/s/^/#/g' /etc/httpd/conf.d/default-ssl.conf
+        service httpd restart
+     else
         echoG 'Setting Apache Config'
         cd ${SCRIPTPATH}/
         a2enmod proxy_fcgi >/dev/null 2>&1

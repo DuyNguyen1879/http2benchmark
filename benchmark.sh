@@ -12,7 +12,7 @@ TOOL_LIST="h2load wrk"
 #TOOL_LIST="h2load h2load-low h2load-m80 h2load-rsa256 h2load-low-rsa256 h2load-m80-rsa256 wrk"
 #TOOL_LIST="h2load h2load-low h2load-m80 h2load-ecc128 h2load-low-ecc128 h2load-m80-ecc128 wrk"
 #TOOL_LIST="h2load h2load-low h2load-m80 h2load-ecc256 h2load-low-ecc256 h2load-m80-ecc256 wrk"
-#TOOL_LIST="h2load jmeter"
+#TOOL_LIST="h2load wrk jmeter"
 TARGET_LIST="1kstatic.html 1kgzip-static.html 1knogzip.jpg amdepyc2.jpg.webp amdepyc2.jpg wordpress coachblog coachbloggzip"
 #TARGET_LIST="1kstatic.html 1kgzip-static.html amdepyc2.jpg.webp amdepyc2.jpg wordpress coachblog coachbloggzip"
 #TARGET_LIST="1kstatic.html 10kstatic.html 1kgzip-static.html 10kgzip-static.html 1knogzip.jpg amdepyc2.jpg amdepyc2.png wordpress coachblog coachbloggzip"
@@ -171,6 +171,10 @@ help_message(){
         exit 0
         ;;
         "2")
+        echoB "#############  Test Environment  #################"
+        check_network ${TESTSERVERIP}
+        check_spec ${TESTSERVERIP}
+        "${SSH[@]}" root@${TESTSERVERIP} "${CMDFD}/monitor.sh check_server_spec"
         echoB "#############  Benchmark Result  #################"
         sort_log
         ;;
@@ -678,13 +682,13 @@ loop_check_server_cpu(){
 
 check_network(){
 ### Check bendwidth    
-    echoG 'Checking network throughput...'
+    #echoG 'Checking network throughput...'
     ### Server side
     silent "${SSH[@]}" root@${1} "iperf -s >/dev/null 2>&1 &"
     silent "${SSH[@]}" root@${1} "ps aux | grep [i]perf"
     if [ ${?} = 0 ]; then
         ### Client side 
-        echoG 'Client side Testing...'
+        #echoG 'Client side Testing...'
         iperf -c ${1} -i1  >> ${ENVLOG}
         ### kill iperf process
         sleep 1
@@ -715,9 +719,6 @@ before_test(){
     if [ -s ${ENVLOG} ]; then
         rm -f ${ENVLOG}; touch ${ENVLOG}
     fi
-    check_network ${TESTSERVERIP}
-    check_spec ${TESTSERVERIP}
-    "${SSH[@]}" root@${TESTSERVERIP} "${CMDFD}/monitor.sh check_server_spec"
     validate_tool
     sleep ${INTERVAL}
     kill_process_cpu ${TESTSERVERIP}
@@ -893,6 +894,7 @@ sort_log(){
                 local TIME_METRIC='s'
                 local TEMP_TIME_SPENT='0'
                 local TEMP_BW_PS='0'
+                local HEADER_COMPRESSION='0'
 
                 if [[ ${ROUNDNUM} -ge 3 ]]; then
                     for ((ROUND=1; ROUND<=${ROUNDNUM}; ROUND++)); do
@@ -933,10 +935,13 @@ sort_log(){
                     # Get Failed requests and if tool is WRK just make FAILED_REQUESTS equal to N/A
                     if [[ ${TOOL} == 'wrk' ]]; then
                         FAILED_REQUESTS='N/A'
+                        HEADER_COMPRESSION='N/A'
                     elif [[ ${TOOL} == 'wrkcmm' ]]; then
                         FAILED_REQUESTS='N/A'
+                        HEADER_COMPRESSION='N/A'
                     else
                         FAILED_REQUESTS=$(awk "BEGIN {print ${FAILED_REQUESTS}+$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep -w ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $16}')}")
+                        HEADER_COMPRESSION=$(awk "BEGIN {print ${HEADER_COMPRESSION}+$(cat ${BENDATE}/${RESULT_NAME}.csv | grep "${SORT_TARGET},${ROUND}," | grep ${TOOL} | grep ${SERVER} | grep ${SERVER_VERSION} | awk -F ',' '{print $17}' | sed 's/.$//')}")
                     fi
                     ((++ITERATIONS))
                 done
@@ -946,17 +951,25 @@ sort_log(){
                 REQUESTS_PER_SECOND=$(awk "BEGIN {print ${REQUESTS_PER_SECOND}/${ITERATIONS}}")
                 if [[ ${TOOL} == 'wrk' ]]; then
                     FAILED_REQUESTS='N/A'
+                    HEADER_COMPRESSION='N/A'
                 elif [[ ${TOOL} == 'wrkcmm' ]]; then
                     FAILED_REQUESTS='N/A'
+                    HEADER_COMPRESSION='N/A'
                 else
                     FAILED_REQUESTS=$(awk "BEGIN {print ${FAILED_REQUESTS}/${ITERATIONS}}")
+                    HEADER_COMPRESSION=$(awk "BEGIN {print ${HEADER_COMPRESSION}/${ITERATIONS}}")
                 fi
 
-                printf "%-15s finished in %10.2f seconds, %10.2f req/s, %10.2f MB/s, %10s failures\n" "${SERVER} ${SERVER_VERSION}" "${TIME_SPENT}" "${REQUESTS_PER_SECOND}" "${BANDWIDTH_PER_SECOND}" "${FAILED_REQUESTS}"
+                if [[ ${HEADER_COMPRESSION} != 'N/A' ]]; then
+                    HEADER_COMPRESSION="${HEADER_COMPRESSION}%"
+                fi
+
+                printf "%-15s finished in %10.2f seconds, %10.2f req/s, %10.2f MB/s, %10s failures, %8s header compression\n" "${SERVER} ${SERVER_VERSION}" "${TIME_SPENT}" "${REQUESTS_PER_SECOND}" "${BANDWIDTH_PER_SECOND}" "${FAILED_REQUESTS}" "${HEADER_COMPRESSION}"
             done
         done
     done
 }
+
 
 parse_log() {
     for SERVER in ${SERVER_LIST}; do
@@ -1004,6 +1017,7 @@ parse_log() {
         done
     done
 }
+
 
 update_web_version(){
     for SERVER in ${SERVER_LIST}; do

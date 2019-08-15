@@ -23,6 +23,10 @@ SERVER_LIST="apache lsws nginx"
 NGINX_MAINLINE='n'
 APACHE_INSTALL='n'
 OPENLITESPEED_INSTALL='n'
+# NGINX_INSTALL can control if you want to install default
+# nginx apt/yum package provided by configured repos or
+# own nginx versions for testing.
+NGINX_INSTALL='y'
 DEFAULT_SSLCERTS='n'
 SANS_SSLCERTS='n'
 SANSECC_SSLCERTS='n'
@@ -508,52 +512,57 @@ centos_install_ols(){
 
 ### Install Nginx
 ubuntu_install_nginx(){
-    echoG 'Install Nginx Web Server'
-    if [ -e /usr/sbin/nginx ]; then 
-        echoY "Remove existing nginx" 
-        rm_old_pkg nginx 
-        KILL_PROCESS nginx
-    fi     
-    echo "deb http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" \
-        | sudo tee /etc/apt/sources.list.d/nginx.list >/dev/null 2>&1
-    curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add - >/dev/null 2>&1
-    apt-get update >/dev/null 2>&1
-    apt install nginx -y >/dev/null 2>&1
-    systemctl start nginx
-    SERVERV=$(echo $(/usr/sbin/nginx -v 2>&1) 2>&1)
-    SERVERV=$(echo ${SERVERV} | grep -o '[0-9.]*')
-    echoG "Version: nginx ${SERVERV}" 
-    echo  "Version: nginx ${SERVERV}" >> ${SERVERACCESS} 
-    checkweb nginx
+    if [[ "$NGINX_INSTALL" = [yY] ]]; then
+        echoG 'Install Nginx Web Server'
+        if [ -e /usr/sbin/nginx ]; then 
+            echoY "Remove existing nginx" 
+            rm_old_pkg nginx 
+            KILL_PROCESS nginx
+        fi     
+        echo "deb http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" \
+            | sudo tee /etc/apt/sources.list.d/nginx.list >/dev/null 2>&1
+        curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add - >/dev/null 2>&1
+        apt-get update >/dev/null 2>&1
+        apt install nginx -y >/dev/null 2>&1
+        systemctl start nginx
+        SERVERV=$(echo $(/usr/sbin/nginx -v 2>&1) 2>&1)
+        SERVERV=$(echo ${SERVERV} | grep -o '[0-9.]*')
+        echoG "Version: nginx ${SERVERV}" 
+        echo  "Version: nginx ${SERVERV}" >> ${SERVERACCESS} 
+        checkweb nginx
+    fi
 }
 
 ubuntu_install_nginx_ml(){
-    echoG 'Install Nginx Web Server'
-    if [ -e /usr/sbin/nginx ]; then 
-        echoY "Remove existing nginx" 
-        rm_old_pkg nginx 
-        KILL_PROCESS nginx
-    fi     
-    echo "deb http://nginx.org/packages/mainline/debian `lsb_release -cs` nginx" \
-        | sudo tee /etc/apt/sources.list.d/nginx.list >/dev/null 2>&1
-    curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add - >/dev/null 2>&1
-    apt-get update >/dev/null 2>&1
-    apt install nginx -y >/dev/null 2>&1
-    systemctl start nginx
-    SERVERV=$(echo $(/usr/sbin/nginx -v 2>&1) 2>&1)
-    SERVERV=$(echo ${SERVERV} | grep -o '[0-9.]*')
-    echoG "Version: nginx ${SERVERV}" 
-    echo  "Version: nginx ${SERVERV}" >> ${SERVERACCESS} 
-    checkweb nginx
+    if [[ "$NGINX_INSTALL" = [yY] ]]; then
+        echoG 'Install Nginx Web Server'
+        if [ -e /usr/sbin/nginx ]; then 
+            echoY "Remove existing nginx" 
+            rm_old_pkg nginx 
+            KILL_PROCESS nginx
+        fi     
+        echo "deb http://nginx.org/packages/mainline/debian `lsb_release -cs` nginx" \
+            | sudo tee /etc/apt/sources.list.d/nginx.list >/dev/null 2>&1
+        curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add - >/dev/null 2>&1
+        apt-get update >/dev/null 2>&1
+        apt install nginx -y >/dev/null 2>&1
+        systemctl start nginx
+        SERVERV=$(echo $(/usr/sbin/nginx -v 2>&1) 2>&1)
+        SERVERV=$(echo ${SERVERV} | grep -o '[0-9.]*')
+        echoG "Version: nginx ${SERVERV}" 
+        echo  "Version: nginx ${SERVERV}" >> ${SERVERACCESS} 
+        checkweb nginx
+    fi
 }
 
 centos_install_nginx(){
-    echoG 'Install Nginx Web Server'
-    if [ -e /usr/sbin/nginx ]; then 
-        echoY "Remove existing nginx" 
-        rm_old_pkg nginx 
-        KILL_PROCESS nginx
-    fi     
+    if [[ "$NGINX_INSTALL" = [yY] ]]; then
+        echoG 'Install Nginx Web Server'
+        if [ -e /usr/sbin/nginx ]; then 
+            echoY "Remove existing nginx" 
+            rm_old_pkg nginx 
+            KILL_PROCESS nginx
+        fi     
     cat > ${REPOPATH}/nginx.repo << EOM
 [nginx-stable]
 name=nginx stable repo
@@ -561,22 +570,24 @@ baseurl=http://nginx.org/packages/centos/\$releasever/\$basearch/
 gpgcheck=0
 enabled=1   
 EOM
-    silent yum install nginx -y
-    systemctl start nginx
-    SERVERV=$(echo $(/usr/sbin/nginx -v 2>&1) 2>&1)
-    SERVERV=$(echo ${SERVERV} | grep -o '[0-9.]*$')
-    echoG "Version: nginx ${SERVERV}" 
-    echo "Version: nginx ${SERVERV}" >> ${SERVERACCESS} 
-    checkweb nginx
+        silent yum install nginx -y
+        systemctl start nginx
+        SERVERV=$(echo $(/usr/sbin/nginx -v 2>&1) 2>&1)
+        SERVERV=$(echo ${SERVERV} | grep -o '[0-9.]*$')
+        echoG "Version: nginx ${SERVERV}" 
+        echo "Version: nginx ${SERVERV}" >> ${SERVERACCESS} 
+        checkweb nginx
+    fi
 }
 
 centos_install_nginx_ml(){
-    echoG 'Install Nginx Web Server'
-    if [ -e /usr/sbin/nginx ]; then 
-        echoY "Remove existing nginx" 
-        rm_old_pkg nginx 
-        KILL_PROCESS nginx
-    fi     
+    if [[ "$NGINX_INSTALL" = [yY] ]]; then
+        echoG 'Install Nginx Web Server'
+        if [ -e /usr/sbin/nginx ]; then 
+            echoY "Remove existing nginx" 
+            rm_old_pkg nginx 
+            KILL_PROCESS nginx
+        fi     
     cat > ${REPOPATH}/nginx.repo << EOM
 [nginx-stable]
 name=nginx stable repo
@@ -592,13 +603,14 @@ gpgcheck=1
 enabled=1
 gpgkey=https://nginx.org/keys/nginx_signing.key
 EOM
-    silent yum install nginx -y
-    systemctl start nginx
-    SERVERV=$(echo $(/usr/sbin/nginx -v 2>&1) 2>&1)
-    SERVERV=$(echo ${SERVERV} | grep -o '[0-9.]*$')
-    echoG "Version: nginx ${SERVERV}" 
-    echo "Version: nginx ${SERVERV}" >> ${SERVERACCESS} 
-    checkweb nginx
+        silent yum install nginx -y
+        systemctl start nginx
+        SERVERV=$(echo $(/usr/sbin/nginx -v 2>&1) 2>&1)
+        SERVERV=$(echo ${SERVERV} | grep -o '[0-9.]*$')
+        echoG "Version: nginx ${SERVERV}" 
+        echo "Version: nginx ${SERVERV}" >> ${SERVERACCESS} 
+        checkweb nginx
+    fi
 }
 
 ubuntu_install_h2o() {
@@ -661,8 +673,13 @@ centos_install_php(){
     /usr/bin/yum install -y yum-utils >/dev/null 2>&1
     /usr/bin/yum-config-manager --enable remi-php72 >/dev/null 2>&1
     /usr/bin/yum install -y php-common php-pdo php-gd php-mbstring php-mysqlnd php-litespeed php-opcache php-pecl-zip php-tidy php-gmp \
-                   php-bcmath php-enchant php-cli php-json php-xml php php-fpm php-recode php-soap php-xmlrpc php-sodium \
+                   php-bcmath php-enchant php-cli php-json php-xml php php-recode php-soap php-xmlrpc php-sodium \
                    php-process php-pspell >/dev/null 2>&1
+    if [[ "$NGINX_INSTALL" = [yY] ]]; then
+        # only install Remi php-fpm for default nginx yum package installations
+        # custom nginx version installs may have their own php-fpm packages
+        /usr/bin/yum install -y php-fpm >/dev/null 2>&1
+    fi
 
     sed -i -e 's/extension=bz2/;extension=bz2/' /etc/php.d/20-bz2.ini
     sed -i -e 's/extension=pdo_sqlite/;extension=pdo_sqlite/' /etc/php.d/30-pdo_sqlite.ini
@@ -1021,18 +1038,20 @@ setup_lsws(){
 
 ### Config Nginx
 setup_nginx(){
-    echoG 'Setting Nginx Config' 
-    cd ${SCRIPTPATH}/
-    backup_old ${NGDIR}/nginx.conf
-    backup_old ${NGDIR}/conf.d/default.conf
-    cp ../../webservers/nginx/conf/nginx.conf ${NGDIR}/
-    
-    if [[ "$SANS_SSLCERTS" = [yY] && "$SANSECC_SSLCERTS" = [yY] ]]; then
-        \cp -f ../../webservers/nginx/conf/default.multicerts.conf ${NGDIR}/conf.d/default.conf
-    else
-        \cp -f ../../webservers/nginx/conf/default.conf ${NGDIR}/conf.d/
+    if [[ "$NGINX_INSTALL" = [yY] ]]; then
+        echoG 'Setting Nginx Config' 
+        cd ${SCRIPTPATH}/
+        backup_old ${NGDIR}/nginx.conf
+        backup_old ${NGDIR}/conf.d/default.conf
+        cp ../../webservers/nginx/conf/nginx.conf ${NGDIR}/
+        
+        if [[ "$SANS_SSLCERTS" = [yY] && "$SANSECC_SSLCERTS" = [yY] ]]; then
+            \cp -f ../../webservers/nginx/conf/default.multicerts.conf ${NGDIR}/conf.d/default.conf
+        else
+            \cp -f ../../webservers/nginx/conf/default.conf ${NGDIR}/conf.d/
+        fi
+        sed -i "s/user apache/user ${USER}/g"  ${NGDIR}/nginx.conf
     fi
-    sed -i "s/user apache/user ${USER}/g"  ${NGDIR}/nginx.conf
 }
 
 ### Config OLS

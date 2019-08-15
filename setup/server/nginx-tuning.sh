@@ -4,13 +4,56 @@ default_vhost='/etc/nginx/conf.d/default.conf'
 nginx_webroot='/var/www/html/wp_nginx'
 nginxconf='/etc/nginx/nginx.conf'
 phpfpmconf='/etc/php-fpm.d/www.conf'
+wpclilink='https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar'
+
+wpcli_install() {
+  if [ ! -f /usr/bin/wp ]; then
+    wget -q -4 --no-check-certificate $wpclilink -O /usr/bin/wp --tries=3
+    chmod 0700 /usr/bin/wp
+    /usr/bin/wp --info --allow-root
+  fi
+  wpaliascheck=$(grep 'allow-root' /root/.bashrc)
+  if [[ -z "$wpaliascheck" ]]; then
+    echo "alias wp='wp --allow-root'" >> /root/.bashrc
+  fi
+}
 
 wptweaks() {
+  wpcli_install
   echo
   cd $nginx_webroot
   echo "install Autoptimize"
   \wp plugin install autoptimize --activate --allow-root
+  echo
   \wp plugin status autoptimize --allow-root
+  echo
+  wp option update autoptimize_cache_clean 0 --activate --allow-root 
+  wp option update autoptimize_cache_nogzip on --activate --allow-root 
+  wp option update autoptimize_cdn_url "" --activate --allow-root 
+  wp option update autoptimize_css on --activate --allow-root 
+  wp option update autoptimize_css_aggregate "" --activate --allow-root 
+  wp option update autoptimize_css_datauris "" --activate --allow-root 
+  wp option update autoptimize_css_defer "" --activate --allow-root 
+  wp option update autoptimize_css_defer_inline "" --activate --allow-root 
+  wp option update autoptimize_css_exclude 'wp-content/cache/, wp-content/uploads/, admin-bar.min.css, dashicons.min.css' --activate --allow-root 
+  wp option update autoptimize_css_include_inline "" --activate --allow-root 
+  wp option update autoptimize_css_inline "" --activate --allow-root 
+  wp option update autoptimize_css_justhead "" --activate --allow-root 
+  wp option update autoptimize_html "" --activate --allow-root 
+  wp option update autoptimize_html_keepcomments "" --activate --allow-root 
+  wp option update autoptimize_imgopt_launched on --activate --allow-root 
+  wp option update autoptimize_js on --activate --allow-root 
+  wp option update autoptimize_js_aggregate "" --activate --allow-root 
+  wp option update autoptimize_js_exclude 'wp-includes/js/dist/, wp-includes/js/tinymce/, js/jquery/jquery.js' --activate --allow-root 
+  wp option update autoptimize_js_forcehead "" --activate --allow-root 
+  wp option update autoptimize_js_include_inline "" --activate --allow-root 
+  wp option update autoptimize_js_justhead "" --activate --allow-root 
+  wp option update autoptimize_js_trycatch "" --activate --allow-root 
+  wp option update autoptimize_minify_excluded on --activate --allow-root 
+  wp option update autoptimize_optimize_checkout "" --activate --allow-root 
+  wp option update autoptimize_optimize_logged on --activate --allow-root 
+  wp option update autoptimize_show_adv 1 --activate --allow-root 
+  wp option list --search=autoptimize* --activate --allow-root
   echo
   # https://github.com/centminmod/autoptimize-gzip
   echo "install Autoptimize Gzip Companion plugin"

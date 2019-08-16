@@ -1,5 +1,7 @@
 * https://github.com/centminmod/http2benchmark/tree/extended-tests
 
+The below tests were done with Litespeed 5.4.0 and Nginx 1.16.0 on CentOS 7.6 64bit KVM VPS using $20/month Upcloud VPS servers.
+
 The original http2benchmark tests only tested standard RSA 2048bit SSL certificates and not the better performing ECC 256bit SSL certificates with ECDSA SSL ciphers. The forked http2benchmarks have optional support for testing ECC 256bit SSL certificates with ECDSA SSL ciphers. Part of the performance comes from smaller SSL certificate and SSL key sizes compared to RSA 2048bit SSL certificate setups. Was expecting Litespeed to have more of an advantage given that it is built with it's own crypto library using Google's BoringSSL which is a forked version of OpenSSL. BoringSSL is known to have better ECDSA performance than OpenSSL. Nginx binaries from nginx.org YUM repo are built against OpenSSL 1.0.2 usually. However, below results were mixed with Nginx beating out Litespeed in some of the below test targets. Especially for `coachblogzip` wordpress simulation tests. Seems Litespeed is more optimised for ECDSA 256bit instead of 128bit.
 
 Below configuration will enable ECDSA SSL certificate support for both Litespeed and Nginx on CentOS 7 servers. Haven't tested on Ubuntu and only test h2load HTTP/2 tests for h2load related profile tools on a select few test targets from below list:

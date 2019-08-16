@@ -18,6 +18,7 @@ TOTAL_BANDWIDTH='N/A'
 TOTAL_REQUESTS='N/A'
 TOTAL_FAILURES='N/A'
 STATUS_CODE_STATS='N/A'
+HEADER_COMPRESSION='N/A'
 
 function parse_wrk() {
   local ITERATION="$1"
@@ -39,17 +40,15 @@ function parse_h2load() {
   BANDWIDTH_PER_SECOND=$(grep 'finished in' ${LOG_FILE}.${ITERATION} | awk '{print $6}' | sed 's/.$//' | sed 's/.$//')
   TOTAL_BANDWIDTH=$(grep 'traffic:' ${LOG_FILE}.${ITERATION} | awk '{print $2}')
   TOTAL_REQUESTS=$(grep 'requests:' ${LOG_FILE}.${ITERATION} | awk '{print $2}')
-  HEADER_SPACESAVINGS=$(grep 'space savings' ${LOG_FILE}.${ITERATION} |  grep -oP '\(\K[^\)]+' | awk '/^space savings/ {print $3}')
+  #HEADER_SPACESAVINGS=$(grep 'space savings' ${LOG_FILE}.${ITERATION} |  grep -oP '\(\K[^\)]+' | awk '/^space savings/ {print $3}')
   local TOTAL_SUCCESS=$(grep 'requests:' ${LOG_FILE}.${ITERATION} | awk '{print $8}')
   if [[ ${TOTAL_REQUESTS} != ${TOTAL_SUCCESS} ]]; then
     TOTAL_FAILURES=$(( ${TOTAL_REQUESTS} - ${TOTAL_SUCCESS} ))
   else
     TOTAL_FAILURES='0'
   fi
-  if [ -z "$HEADER_SPACESAVINGS" ]; then
-    HEADER_SPACESAVINGS='NA'
-  fi
   STATUS_CODE_STATS=$(grep 'status codes:' ${LOG_FILE}.${ITERATION} | perl -pe "s/status codes: (.*?)/\1/")
+  HEADER_COMPRESSION=$(grep 'traffic:' ${LOG_FILE}.${ITERATION} | awk '{print $10}' | grep -Po '[0-9]+.[0-9]+')
   TTFB_MIN=$(grep '^time to 1st byte:' ${LOG_FILE}.${ITERATION} | xargs | awk '{print $5}')
   TTFB_MEAN=$(grep '^time to 1st byte:' ${LOG_FILE}.${ITERATION} | xargs | awk '{print $6}')
   TTFB_MAX=$(grep '^time to 1st byte:' ${LOG_FILE}.${ITERATION} | xargs | awk '{print $7}')
@@ -59,9 +58,9 @@ function parse_h2load() {
 function generate_csv() {
   local ITERATION="${1}"
   if [[ ! -f ${WORKING_PATH}/RESULTS.csv ]]; then
-    printf "Test Ran,Iteration,Log File,Server Name,Server Version,Benchmark Tool,Concurrent Connections,Concurrent Streams,URL,Application Protocol,TLS Protocol,Total Time Spent,Requests Per Second,Bandwidth Per Second,Total Bandwidth,Total Requests,Total Failures,Status Code Stats,Header Space Savings,TTFB Min, TTFB Avg, TTFB Max, TTFB SD\n" >> ${WORKING_PATH}/RESULTS.csv
+    printf "Test Ran,Iteration,Log File,Server Name,Server Version,Benchmark Tool,Concurrent Connections,Concurrent Streams,URL,Application Protocol,TLS Protocol,Total Time Spent,Requests Per Second,Bandwidth Per Second,Total Bandwidth,Total Requests,Total Failures,Header Compression,Status Code Stats,TTFB Min, TTFB Avg, TTFB Max, TTFB SD\n" >> ${WORKING_PATH}/RESULTS.csv
   fi
-    printf "${TEST_RAN},${ITERATION},${LOG_FILE},${SERVER_NAME},${SERVER_VERSION},${BENCHMARK_TOOL},${CONCURRENT_CONNECTIONS},${CONCURRENT_STREAMS},${URL},${APPLICATION_PROTOCOL},${TLS_PROTOCOL},${TOTAL_TIME_SPENT},${REQUESTS_PER_SECOND},${BANDWIDTH_PER_SECOND},${TOTAL_BANDWIDTH},${TOTAL_REQUESTS},${TOTAL_FAILURES},${STATUS_CODE_STATS,${HEADER_SPACESAVINGS},${TTFB_MIN},${TTFB_MEAN},${TTFB_MAX},${TTFB_SD}//,}\n" >> ${WORKING_PATH}/RESULTS.csv
+    printf "${TEST_RAN},${ITERATION},${LOG_FILE},${SERVER_NAME},${SERVER_VERSION},${BENCHMARK_TOOL},${CONCURRENT_CONNECTIONS},${CONCURRENT_STREAMS},${URL},${APPLICATION_PROTOCOL},${TLS_PROTOCOL},${TOTAL_TIME_SPENT},${REQUESTS_PER_SECOND},${BANDWIDTH_PER_SECOND},${TOTAL_BANDWIDTH},${TOTAL_REQUESTS},${TOTAL_FAILURES},${HEADER_COMPRESSION}%,${STATUS_CODE_STATS,${TTFB_MIN},${TTFB_MEAN},${TTFB_MAX},${TTFB_SD}//,}\n" >> ${WORKING_PATH}/RESULTS.csv
 }
 
 function pretty_display() {
@@ -83,7 +82,7 @@ Total Bandwidth:        ${TOTAL_BANDWIDTH}
 Bandwidth Per Second:   ${BANDWIDTH_PER_SECOND}
 Total Failures:         ${TOTAL_FAILURES}
 Status Code Stats:      ${STATUS_CODE_STATS}
-Header Space Savings:   ${HEADER_SPACESAVINGS}
+Header Compression:     ${HEADER_COMPRESSION}%
 TTFB Min:               ${TTFB_MIN}
 TTFB Avg:               ${TTFB_MEAN}
 TTFB Max:               ${TTFB_MAX}

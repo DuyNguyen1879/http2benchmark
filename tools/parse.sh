@@ -32,27 +32,36 @@ function parse_wrk() {
 function parse_h2load() {
   local ITERATION="$1"
   APPLICATION_PROTOCOL=$(grep 'Application protocol:' ${LOG_FILE}.${ITERATION} | awk '{print $3}')
+  TLS_PROTOCOL=$(grep 'TLS Protocol:' ${LOG_FILE}.${ITERATION} | awk '{print $3}')
   CONCURRENT_CONNECTIONS=$(grep 'total client' ${LOG_FILE}.${ITERATION} | awk '{print $4}')
   TOTAL_TIME_SPENT=$(grep 'finished in' ${LOG_FILE}.${ITERATION} | awk '{print $3}' | sed 's/.$//')
   REQUESTS_PER_SECOND=$(grep 'finished in' ${LOG_FILE}.${ITERATION} | awk '{print $4}' | sed 's/.$//')
   BANDWIDTH_PER_SECOND=$(grep 'finished in' ${LOG_FILE}.${ITERATION} | awk '{print $6}' | sed 's/.$//' | sed 's/.$//')
   TOTAL_BANDWIDTH=$(grep 'traffic:' ${LOG_FILE}.${ITERATION} | awk '{print $2}')
   TOTAL_REQUESTS=$(grep 'requests:' ${LOG_FILE}.${ITERATION} | awk '{print $2}')
+  HEADER_SPACESAVINGS=$(grep 'space savings' ${LOG_FILE}.${ITERATION} |  grep -oP '\(\K[^\)]+' | awk '/^space savings/ {print $3}')
   local TOTAL_SUCCESS=$(grep 'requests:' ${LOG_FILE}.${ITERATION} | awk '{print $8}')
   if [[ ${TOTAL_REQUESTS} != ${TOTAL_SUCCESS} ]]; then
     TOTAL_FAILURES=$(( ${TOTAL_REQUESTS} - ${TOTAL_SUCCESS} ))
   else
     TOTAL_FAILURES='0'
   fi
+  if [ -z "$HEADER_SPACESAVINGS" ]; then
+    HEADER_SPACESAVINGS='NA'
+  fi
   STATUS_CODE_STATS=$(grep 'status codes:' ${LOG_FILE}.${ITERATION} | perl -pe "s/status codes: (.*?)/\1/")
+  TTFB_MIN=$(grep '^time to 1st byte:' ${LOG_FILE}.${ITERATION} | xargs | awk '{print $5}')
+  TTFB_MEAN=$(grep '^time to 1st byte:' ${LOG_FILE}.${ITERATION} | xargs | awk '{print $6}')
+  TTFB_MAX=$(grep '^time to 1st byte:' ${LOG_FILE}.${ITERATION} | xargs | awk '{print $7}')
+  TTFB_SD=$(grep '^time to 1st byte:' ${LOG_FILE}.${ITERATION} | xargs | awk '{print $8}')
 }
 
 function generate_csv() {
   local ITERATION="${1}"
   if [[ ! -f ${WORKING_PATH}/RESULTS.csv ]]; then
-    printf "Test Ran,Iteration,Log File,Server Name,Server Version,Benchmark Tool,Concurrent Connections,Concurrent Streams,URL,Application Protocol,Total Time Spent,Requests Per Second,Bandwidth Per Second,Total Bandwidth,Total Requests,Total Failures,Status Code Stats\n" >> ${WORKING_PATH}/RESULTS.csv
+    printf "Test Ran,Iteration,Log File,Server Name,Server Version,Benchmark Tool,Concurrent Connections,Concurrent Streams,URL,Application Protocol,TLS Protocol,Total Time Spent,Requests Per Second,Bandwidth Per Second,Total Bandwidth,Total Requests,Total Failures,Status Code Stats,Header Space Savings,TTFB Min, TTFB Avg, TTFB Max, TTFB SD\n" >> ${WORKING_PATH}/RESULTS.csv
   fi
-    printf "${TEST_RAN},${ITERATION},${LOG_FILE},${SERVER_NAME},${SERVER_VERSION},${BENCHMARK_TOOL},${CONCURRENT_CONNECTIONS},${CONCURRENT_STREAMS},${URL},${APPLICATION_PROTOCOL},${TOTAL_TIME_SPENT},${REQUESTS_PER_SECOND},${BANDWIDTH_PER_SECOND},${TOTAL_BANDWIDTH},${TOTAL_REQUESTS},${TOTAL_FAILURES},${STATUS_CODE_STATS//,}\n" >> ${WORKING_PATH}/RESULTS.csv
+    printf "${TEST_RAN},${ITERATION},${LOG_FILE},${SERVER_NAME},${SERVER_VERSION},${BENCHMARK_TOOL},${CONCURRENT_CONNECTIONS},${CONCURRENT_STREAMS},${URL},${APPLICATION_PROTOCOL},${TLS_PROTOCOL},${TOTAL_TIME_SPENT},${REQUESTS_PER_SECOND},${BANDWIDTH_PER_SECOND},${TOTAL_BANDWIDTH},${TOTAL_REQUESTS},${TOTAL_FAILURES},${STATUS_CODE_STATS,${HEADER_SPACESAVINGS},${TTFB_MIN},${TTFB_MEAN},${TTFB_MAX},${TTFB_SD}//,}\n" >> ${WORKING_PATH}/RESULTS.csv
 }
 
 function pretty_display() {
@@ -64,6 +73,7 @@ Server Version:         ${SERVER_VERSION}
 Benchmark Tool:         ${BENCHMARK_TOOL}
 URL:                    ${URL}
 Application Protocol:   ${APPLICATION_PROTOCOL}
+TLS Protocol:           ${TLS_PROTOCOL}
 Total Time Spent:       ${TOTAL_TIME_SPENT}
 Concurrent Connections: ${CONCURRENT_CONNECTIONS}
 Concurrent Streams:     ${CONCURRENT_STREAMS}
@@ -73,6 +83,11 @@ Total Bandwidth:        ${TOTAL_BANDWIDTH}
 Bandwidth Per Second:   ${BANDWIDTH_PER_SECOND}
 Total Failures:         ${TOTAL_FAILURES}
 Status Code Stats:      ${STATUS_CODE_STATS}
+Header Space Savings:   ${HEADER_SPACESAVINGS}
+TTFB Min:               ${TTFB_MIN}
+TTFB Avg:               ${TTFB_MEAN}
+TTFB Max:               ${TTFB_MAX}
+TTFB SD:                ${TTFB_SD}
 
 EOF
 }

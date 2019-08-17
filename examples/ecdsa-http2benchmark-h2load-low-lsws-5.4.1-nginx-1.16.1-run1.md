@@ -48,7 +48,7 @@ SANSECC_SSLCERTS='y'
 
 ```
 git clone -b extended-tests https://github.com/centminmod/http2benchmark.git
-echo -e 'SERVER_LIST="lsws nginx"\nTOOL_LIST="h2load-low h2load-low-ecc128 h2load-low-ecc256"\nTARGET_LIST="1kstatic.html 1kgzip-static.html amdepyc2.jpg.webp wordpress coachblog coachbloggzip"\nROUNDNUM=5' > /opt/benchmark.ini
+echo -e 'SERVER_LIST="lsws nginx"\nTOOL_LIST="h2load-low h2load-low-ecc128 h2load-low-ecc256"\nTARGET_LIST="1kstatic.html 1kgzip-static.html amdepyc2.jpg.webp wordpress coachblog coachbloggzip"\nROUNDNUM=7' > /opt/benchmark.ini
 http2benchmark/setup/client/client.sh | tee client.log
 /opt/benchmark.sh | tee benchmark.log
 ```

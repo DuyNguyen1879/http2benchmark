@@ -62,7 +62,7 @@ function generate_csv() {
   if [[ ! -f ${WORKING_PATH}/RESULTS.csv ]]; then
     printf "Test Ran,Iteration,Log File,Server Name,Server Version,Benchmark Tool,Concurrent Connections,Concurrent Streams,URL,Application Protocol,TLS Protocol,Cipher,Server Temp Key,Total Time Spent,Requests Per Second,Bandwidth Per Second,Total Bandwidth,Total Requests,Total Failures,Header Compression,Status Code Stats,TTFB Min, TTFB Avg, TTFB Max, TTFB SD\n" >> ${WORKING_PATH}/RESULTS.csv
   fi
-    printf "${TEST_RAN},${ITERATION},${LOG_FILE},${SERVER_NAME},${SERVER_VERSION},${BENCHMARK_TOOL},${CONCURRENT_CONNECTIONS},${CONCURRENT_STREAMS},${URL},${APPLICATION_PROTOCOL},${TLS_PROTOCOL},${CIPHER},${SERVER_TEMP_KEY},${TOTAL_TIME_SPENT},${REQUESTS_PER_SECOND},${BANDWIDTH_PER_SECOND},${TOTAL_BANDWIDTH},${TOTAL_REQUESTS},${TOTAL_FAILURES},${HEADER_COMPRESSION}%,${STATUS_CODE_STATS},${TTFB_MIN},${TTFB_MEAN},${TTFB_MAX},${TTFB_SD}//,}\n" >> ${WORKING_PATH}/RESULTS.csv
+    printf "${TEST_RAN},${ITERATION},${LOG_FILE},${SERVER_NAME},${SERVER_VERSION},${BENCHMARK_TOOL},${CONCURRENT_CONNECTIONS},${CONCURRENT_STREAMS},${URL},${APPLICATION_PROTOCOL},${TLS_PROTOCOL},${CIPHER},${SERVER_TEMP_KEY},${TOTAL_TIME_SPENT},${REQUESTS_PER_SECOND},${BANDWIDTH_PER_SECOND},${TOTAL_BANDWIDTH},${TOTAL_REQUESTS},${TOTAL_FAILURES},${HEADER_COMPRESSION},${STATUS_CODE_STATS},${TTFB_MIN},${TTFB_MEAN},${TTFB_MAX},${TTFB_SD}//,}\n" >> ${WORKING_PATH}/RESULTS.csv
 }
 
 function pretty_display() {

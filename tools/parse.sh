@@ -35,7 +35,7 @@ function parse_h2load() {
   APPLICATION_PROTOCOL=$(grep 'Application protocol:' ${LOG_FILE}.${ITERATION} | awk '{print $3}')
   TLS_PROTOCOL=$(grep 'TLS Protocol:' ${LOG_FILE}.${ITERATION} | awk '{print $3}')
   CIPHER=$(grep 'Cipher:' ${LOG_FILE}.${ITERATION} | awk '{print $2}')
-  SERVER_TEMP_KEY=$(awk -F ': ' '/Server Temp Key:/ {print $2}' ${LOG_FILE}.${ITERATION})
+  SERVER_TEMP_KEY=$(awk -F ': ' '/Server Temp Key:/ {print $2}' ${LOG_FILE}.${ITERATION} | sed -e 's| |-|g')
   CONCURRENT_CONNECTIONS=$(grep 'total client' ${LOG_FILE}.${ITERATION} | awk '{print $4}')
   TOTAL_TIME_SPENT=$(grep 'finished in' ${LOG_FILE}.${ITERATION} | awk '{print $3}' | sed 's/.$//')
   REQUESTS_PER_SECOND=$(grep 'finished in' ${LOG_FILE}.${ITERATION} | awk '{print $4}' | sed 's/.$//')

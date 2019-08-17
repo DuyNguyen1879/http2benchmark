@@ -34,6 +34,8 @@ function parse_h2load() {
   local ITERATION="$1"
   APPLICATION_PROTOCOL=$(grep 'Application protocol:' ${LOG_FILE}.${ITERATION} | awk '{print $3}')
   TLS_PROTOCOL=$(grep 'TLS Protocol:' ${LOG_FILE}.${ITERATION} | awk '{print $3}')
+  CIPHER=$(grep 'Cipher:' ${LOG_FILE}.${ITERATION} | awk '{print $2}')
+  SERVER_TEMP_KEY=$(awk -F ': ' '/Server Temp Key:/ {print $2}' ${LOG_FILE}.${ITERATION})
   CONCURRENT_CONNECTIONS=$(grep 'total client' ${LOG_FILE}.${ITERATION} | awk '{print $4}')
   TOTAL_TIME_SPENT=$(grep 'finished in' ${LOG_FILE}.${ITERATION} | awk '{print $3}' | sed 's/.$//')
   REQUESTS_PER_SECOND=$(grep 'finished in' ${LOG_FILE}.${ITERATION} | awk '{print $4}' | sed 's/.$//')
@@ -58,9 +60,9 @@ function parse_h2load() {
 function generate_csv() {
   local ITERATION="${1}"
   if [[ ! -f ${WORKING_PATH}/RESULTS.csv ]]; then
-    printf "Test Ran,Iteration,Log File,Server Name,Server Version,Benchmark Tool,Concurrent Connections,Concurrent Streams,URL,Application Protocol,TLS Protocol,Total Time Spent,Requests Per Second,Bandwidth Per Second,Total Bandwidth,Total Requests,Total Failures,Header Compression,Status Code Stats,TTFB Min, TTFB Avg, TTFB Max, TTFB SD\n" >> ${WORKING_PATH}/RESULTS.csv
+    printf "Test Ran,Iteration,Log File,Server Name,Server Version,Benchmark Tool,Concurrent Connections,Concurrent Streams,URL,Application Protocol,TLS Protocol,Cipher,Server Temp Key,Total Time Spent,Requests Per Second,Bandwidth Per Second,Total Bandwidth,Total Requests,Total Failures,Header Compression,Status Code Stats,TTFB Min, TTFB Avg, TTFB Max, TTFB SD\n" >> ${WORKING_PATH}/RESULTS.csv
   fi
-    printf "${TEST_RAN},${ITERATION},${LOG_FILE},${SERVER_NAME},${SERVER_VERSION},${BENCHMARK_TOOL},${CONCURRENT_CONNECTIONS},${CONCURRENT_STREAMS},${URL},${APPLICATION_PROTOCOL},${TLS_PROTOCOL},${TOTAL_TIME_SPENT},${REQUESTS_PER_SECOND},${BANDWIDTH_PER_SECOND},${TOTAL_BANDWIDTH},${TOTAL_REQUESTS},${TOTAL_FAILURES},${HEADER_COMPRESSION}%,${STATUS_CODE_STATS,${TTFB_MIN},${TTFB_MEAN},${TTFB_MAX},${TTFB_SD}//,}\n" >> ${WORKING_PATH}/RESULTS.csv
+    printf "${TEST_RAN},${ITERATION},${LOG_FILE},${SERVER_NAME},${SERVER_VERSION},${BENCHMARK_TOOL},${CONCURRENT_CONNECTIONS},${CONCURRENT_STREAMS},${URL},${APPLICATION_PROTOCOL},${TLS_PROTOCOL},${CIPHER},${SERVER_TEMP_KEY},${TOTAL_TIME_SPENT},${REQUESTS_PER_SECOND},${BANDWIDTH_PER_SECOND},${TOTAL_BANDWIDTH},${TOTAL_REQUESTS},${TOTAL_FAILURES},${HEADER_COMPRESSION}%,${STATUS_CODE_STATS,${TTFB_MIN},${TTFB_MEAN},${TTFB_MAX},${TTFB_SD}//,}\n" >> ${WORKING_PATH}/RESULTS.csv
 }
 
 function pretty_display() {
@@ -73,6 +75,8 @@ Benchmark Tool:         ${BENCHMARK_TOOL}
 URL:                    ${URL}
 Application Protocol:   ${APPLICATION_PROTOCOL}
 TLS Protocol:           ${TLS_PROTOCOL}
+Cipher:                 ${CIPHER}
+Server Temp Key:        ${SERVER_TEMP_KEY}
 Total Time Spent:       ${TOTAL_TIME_SPENT}
 Concurrent Connections: ${CONCURRENT_CONNECTIONS}
 Concurrent Streams:     ${CONCURRENT_STREAMS}

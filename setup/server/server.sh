@@ -21,7 +21,7 @@ REPOPATH=''
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 SERVER_LIST="apache lsws nginx"
 NGINX_MAINLINE='n'
-APACHE_INSTALL='n'
+APACHE_INSTALL='y'
 OPENLITESPEED_INSTALL='n'
 # NGINX_INSTALL can control if you want to install default
 # nginx apt/yum package provided by configured repos or

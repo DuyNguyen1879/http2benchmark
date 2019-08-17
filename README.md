@@ -4,6 +4,7 @@
 * `extended-tests` forked branch can be searched via [Sourcegraph](https://sourcegraph.com/github.com/centminmod/http2benchmark@extended-tests)
 * [Example forked HTTP/2 HTTPS benchmark h2load-low profile run](https://github.com/centminmod/http2benchmark/blob/extended-tests/examples/ecdsa-http2benchmark-h2load-low.md) with ECDSA 256bit SSL certificates and SSL ciphers [here](https://github.com/centminmod/http2benchmark/blob/extended-tests/examples/ecdsa-http2benchmark-h2load-low.md).
 * [Example forked HTTP/2 HTTPS benchmark h2load profile run](https://github.com/centminmod/http2benchmark/blob/extended-tests/examples/ecdsa-http2benchmark-h2load.md) with ECDSA 256bit SSL certificates and SSL ciphers [here](https://github.com/centminmod/http2benchmark/blob/extended-tests/examples/ecdsa-http2benchmark-h2load.md).
+* Updated example tests with [Litespeed 5.4.1 vs Nginx 1.16.1](https://github.com/centminmod/http2benchmark/blob/extended-tests/examples/ecdsa-http2benchmark-h2load-low-lsws-5.4.1-nginx-1.16.1-run1.md) are [here](https://github.com/centminmod/http2benchmark/blob/extended-tests/examples/ecdsa-http2benchmark-h2load-low-lsws-5.4.1-nginx-1.16.1-run1.md)
 
 # Web servers
 

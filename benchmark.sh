@@ -713,6 +713,16 @@ check_spec(){
     echoY $(lscpu | grep '^CPU(s):' | awk '{print $NF}')                | tee -a ${ENVLOG}
     echo -n 'Client Server - CPU Thread: '                              | tee -a ${ENVLOG}
     echoY $(lscpu | grep '^Thread(s) per core' | awk '{print $NF}')     | tee -a ${ENVLOG}
+    # CPU Model
+    VIRTUALCORES=$(grep -c ^processor /proc/cpuinfo)
+    PHYSICALCPUS=$(grep 'physical id' /proc/cpuinfo | sort -u | wc -l)
+    CPUCORES=$(grep 'cpu cores' /proc/cpuinfo | head -n 1 | cut -d: -f2)
+    CPUSPEED=$(awk -F: '/cpu MHz/{print $2}' /proc/cpuinfo | sort | uniq -c)
+    CPUMODEL=$(awk -F: '/model name/{print $2}' /proc/cpuinfo | sort | uniq -c)
+    CPUCACHE=$(awk -F: '/cache size/{print $2}' /proc/cpuinfo | sort | uniq -c)
+    echo " Client Server - CPU Speed: $CPUSPEED" | tee -a ${ENVLOG}
+    echo " Client Server - CPU Model: $CPUMODEL" | tee -a ${ENVLOG}
+    echo " Client Server - CPU Cache: $CPUCACHE" | tee -a ${ENVLOG}
 }
 
 before_test(){
